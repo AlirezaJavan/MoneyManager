@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_sms_impl_sms_title">مدیریت پیامک‌های بانکی</string>
+    <string name="feature_sms_impl_sms_teach_section_title">آموزش قانون جدید</string>
+    <string name="feature_sms_impl_sms_edit_section_title">ویرایش قانون</string>
+    <string name="feature_sms_impl_sms_teach_description">یک پیامک بانکی نمونه را با اطلاعات فرستنده وارد کنید تا برنامه قانون تشخیص را یاد بگیرد.</string>
+    <string name="feature_sms_impl_sms_teach_body_hint">متن پیامک نمونه</string>
+    <string name="feature_sms_impl_sms_teach_sender_hint">فرستنده (شماره یا نام)</string>
+    <string name="feature_sms_impl_sms_teach_bank_name_hint">نام بانک (اختیاری)</string>
+    <string name="feature_sms_impl_sms_teach_preview">پیش‌نمایش</string>
+    <string name="feature_sms_impl_sms_teach_save">ذخیره قانون</string>
+    <string name="feature_sms_impl_sms_teach_update">به‌روزرسانی قانون</string>
+    <string name="feature_sms_impl_sms_teach_cancel">لغو</string>
+    <string name="feature_sms_impl_sms_teach_reset">پاک کردن</string>
+    <string name="feature_sms_impl_sms_teach_no_match">پیامک شناسایی نشد. مطمئن شوید پیامک حاوی مبلغ و کلمات واریز/برداشت باشد.</string>
+    <string name="feature_sms_impl_sms_teach_saved">قانون با موفقیت ذخیره شد!</string>
+    <string name="feature_sms_impl_sms_teach_rule_detected">قانون شناسایی‌شده:</string>
+    <string name="feature_sms_impl_sms_teach_rule_bank">بانک: %1$s</string>
+    <string name="feature_sms_impl_sms_teach_rule_sender">فرستنده: %1$s</string>
+    <string name="feature_sms_impl_sms_teach_rule_income_keywords">کلمات درآمد: %1$s</string>
+    <string name="feature_sms_impl_sms_teach_rule_expense_keywords">کلمات مخارج: %1$s</string>
+    <string name="feature_sms_impl_sms_teach_rule_unit_rial">واحد: ریال</string>
+    <string name="feature_sms_impl_sms_teach_rule_unit_toman">واحد: تومان</string>
+    <string name="feature_sms_impl_sms_rules_title">قوانین یاد گرفته‌شده (%1$s)</string>
+    <string name="feature_sms_impl_sms_rules_empty">هنوز قانونی آموزش داده نشده. یک پیامک بانکی نمونه را در بالا وارد کنید.</string>
+    <string name="feature_sms_impl_sms_rule_delete_desc">حذف قانون</string>
+    <string name="feature_sms_impl_sms_rule_edit">ویرایش</string>
+    <string name="feature_sms_impl_sms_rule_edit_desc">ویرایش قانون</string>
+    <string name="feature_sms_impl_sms_rule_delete_title">حذف قانون</string>
+    <string name="feature_sms_impl_sms_rule_delete_message">قانون «%1$s» حذف شود؟</string>
+    <string name="feature_sms_impl_sms_rule_delete_confirm">حذف</string>
+    <string name="feature_sms_impl_sms_rule_delete_dismiss">انصراف</string>
+    <string name="feature_sms_impl_sms_rule_enabled">فعال</string>
+    <string name="feature_sms_impl_sms_rule_disabled">غیرفعال</string>
+</resources>

@@ -1,0 +1,51 @@
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+build/
+generated/
+/legacy/
+
+# Sandbox stuff
+_sandbox
+
+# Android Studio captures folder
+captures/
+
+# Kotlin
+.kotlin
+/core/database/schemas/*
+
+# AI tooling
+.claude/
+
+# Graphify output
+graphify-out/
+cost.json
+
+# Signing keys — never commit these
+*.jks
+*.keystore
+/money-manager
+/REWRITE_TASKS.md

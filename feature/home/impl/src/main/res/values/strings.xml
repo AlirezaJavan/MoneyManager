@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_home_impl_home_empty_state">تراکنشی در این ماه ثبت نشده است</string>
+    <string name="feature_home_impl_home_filter_all">همه</string>
+    <string name="feature_home_impl_home_filter_income">درآمد</string>
+    <string name="feature_home_impl_home_filter_expense">مخارج</string>
+    <string name="feature_home_impl_home_label_income">درآمد</string>
+    <string name="feature_home_impl_home_label_expense">مخارج</string>
+    <string name="feature_home_impl_home_label_balance">مانده</string>
+    <string name="feature_home_impl_home_prev_month_desc">ماه قبل</string>
+    <string name="feature_home_impl_home_next_month_desc">ماه بعد</string>
+    <string name="feature_home_impl_home_add_transaction_desc">افزودن تراکنش</string>
+</resources>

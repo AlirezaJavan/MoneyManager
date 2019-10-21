@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101796210440",
+    "project_id": "myapps-8863e",
+    "storage_bucket": "myapps-8863e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101796210440:android:9b7bcd76a878beb4f3eebd",
+        "android_client_info": {
+          "package_name": "javan.moneymanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnrFzrGUi0E4J3CxOWZ0IdQfYVCnS5P0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
