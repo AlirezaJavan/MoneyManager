@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_settings_impl_settings_title">تنظیمات</string>
+    <string name="feature_settings_impl_settings_biometric">ورود با اثر انگشت</string>
+    <string name="feature_settings_impl_settings_sms_service">تشخیص خودکار پیامک‌های بانکی</string>
+    <string name="feature_settings_impl_settings_theme_title">پوسته برنامه</string>
+    <string name="feature_settings_impl_settings_theme_system">هماهنگ با سیستم</string>
+    <string name="feature_settings_impl_settings_theme_light">روشن</string>
+    <string name="feature_settings_impl_settings_theme_dark">تاریک</string>
+    <string name="feature_settings_impl_settings_change_password">تغییر رمز عبور</string>
+    <string name="feature_settings_impl_settings_sms_rules">مدیریت پیامک‌های بانکی</string>
+    <string name="feature_settings_impl_settings_dialog_change_password_title">تغییر رمز عبور</string>
+    <string name="feature_settings_impl_settings_old_password">رمز فعلی</string>
+    <string name="feature_settings_impl_settings_new_password">رمز جدید</string>
+    <string name="feature_settings_impl_settings_action_save">ذخیره</string>
+    <string name="feature_settings_impl_settings_action_cancel">انصراف</string>
+    <string name="feature_settings_impl_settings_message_password_changed">رمز عبور با موفقیت تغییر کرد</string>
+    <string name="feature_settings_impl_settings_message_password_wrong">رمز عبور فعلی اشتباه است</string>
+</resources>

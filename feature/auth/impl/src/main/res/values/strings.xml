@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_auth_impl_auth_title">مدیریت مخارج</string>
+    <string name="feature_auth_impl_auth_subtitle_signup">برای شروع، یک نام کاربری و رمز عبور بسازید</string>
+    <string name="feature_auth_impl_auth_subtitle_login">برای ورود، رمز عبور خود را وارد کنید</string>
+    <string name="feature_auth_impl_auth_label_username">نام کاربری</string>
+    <string name="feature_auth_impl_auth_label_password">رمز عبور</string>
+    <string name="feature_auth_impl_auth_label_confirm_password">تکرار رمز عبور</string>
+    <string name="feature_auth_impl_auth_action_register">ثبت و ورود</string>
+    <string name="feature_auth_impl_auth_action_login">ورود</string>
+    <string name="feature_auth_impl_auth_biometric">ورود با اثر انگشت</string>
+    <string name="feature_auth_impl_auth_error_username_blank">نام کاربری را وارد کنید</string>
+    <string name="feature_auth_impl_auth_error_confirm_blank">تکرار رمز عبور را وارد کنید</string>
+    <string name="feature_auth_impl_auth_error_confirm_mismatch">رمز عبور و تکرار آن یکسان نیستند</string>
+    <string name="feature_auth_impl_auth_error_password_blank">رمز عبور را وارد کنید</string>
+    <string name="feature_auth_impl_auth_error_password_short">رمز عبور باید حداقل ۴ کاراکتر باشد</string>
+    <string name="feature_auth_impl_auth_error_password_wrong">رمز عبور اشتباه است</string>
+</resources>

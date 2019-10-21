@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_migration_impl_migration_title">انتقال اطلاعات نسخه قبلی</string>
+    <string name="feature_migration_impl_migration_description">اگر از نسخه قبلی برنامه استفاده می‌کردید، اطلاعات شما به نسخه جدید منتقل می‌شود.</string>
+    <string name="feature_migration_impl_migration_auto_detect">تبدیل خودکار اطلاعات</string>
+    <string name="feature_migration_impl_migration_pick_file">انتخاب فایل دیتابیس قدیمی</string>
+    <string name="feature_migration_impl_migration_skip">بدون انتقال، ادامه بده</string>
+    <string name="feature_migration_impl_migration_success">انتقال با موفقیت انجام شد</string>
+    <string name="feature_migration_impl_migration_error_not_found">فایل اطلاعات نسخه قبلی پیدا نشد</string>
+    <string name="feature_migration_impl_migration_error_read">خواندن فایل انتخاب‌شده ممکن نبود</string>
+    <string name="feature_migration_impl_migration_error_generic">خطا در تبدیل اطلاعات</string>
+</resources>

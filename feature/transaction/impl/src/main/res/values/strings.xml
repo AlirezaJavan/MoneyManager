@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_transaction_impl_transaction_add_title">افزودن تراکنش</string>
+    <string name="feature_transaction_impl_transaction_edit_title">ویرایش تراکنش</string>
+    <string name="feature_transaction_impl_transaction_delete_desc">حذف</string>
+    <string name="feature_transaction_impl_transaction_type_expense">مخارج</string>
+    <string name="feature_transaction_impl_transaction_type_income">درآمد</string>
+    <string name="feature_transaction_impl_transaction_label_amount">مبلغ (تومان)</string>
+    <string name="feature_transaction_impl_transaction_label_category">دسته</string>
+    <string name="feature_transaction_impl_transaction_label_title">عنوان</string>
+    <string name="feature_transaction_impl_transaction_label_note">توضیحات</string>
+    <string name="feature_transaction_impl_transaction_error_amount">مبلغ معتبر وارد کنید</string>
+    <string name="feature_transaction_impl_transaction_action_save">ذخیره</string>
+    <string name="feature_transaction_impl_transaction_back_desc">بازگشت</string>
+</resources>

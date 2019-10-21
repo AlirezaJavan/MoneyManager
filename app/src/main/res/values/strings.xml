@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مدیریت مخارج</string>
+    <string name="widget_description">خلاصه مالی ماه جاری</string>
+    <string name="biometric_title">ورود به مدیریت مخارج</string>
+    <string name="biometric_subtitle">برای ورود، اثر انگشت خود را ثبت کنید</string>
+    <string name="biometric_negative_button">استفاده از رمز عبور</string>
+    <string name="app_disabled">برنامه از طرف توسعه‌دهنده غیرفعال شده است</string>
+    <string name="sms_confirm_title">تراکنش بانکی جدید</string>
+    <string name="sms_confirm_category_label">دسته‌بندی</string>
+    <string name="sms_confirm_note_hint">توضیح (اختیاری)</string>
+    <string name="sms_confirm_dismiss">نادیده بگیر</string>
+    <string name="sms_confirm_save">ذخیره</string>
+    <string name="sms_confirm_income">درآمد</string>
+    <string name="sms_confirm_expense">مخارج</string>
+    <string name="sms_confirm_source">%1$s از %2$s</string>
+    <string name="widget_balance_label">مانده</string>
+    <string name="widget_income_label">درآمد</string>
+    <string name="widget_expense_label">مخارج</string>
+    <string name="nav_home">خانه</string>
+    <string name="nav_reports">نمودارها</string>
+    <string name="nav_categories">دسته‌ها</string>
+    <string name="nav_settings">تنظیمات</string>
+    <string name="sms_service_channel_name">تشخیص پیامک بانکی</string>
+    <string name="sms_service_channel_description">سرویس پس‌زمینه تشخیص تراکنش‌های بانکی</string>
+    <string name="sms_service_notification_title">پیامک‌های بانکی در حال پایش</string>
+    <string name="sms_service_notification_text">در انتظار پیامک‌های بانکی…</string>
+    <string name="sms_alert_channel_name">هشدار تراکنش جدید</string>
+    <string name="sms_alert_channel_description">نمایش پنجره تایید برای تراکنش‌های شناسایی شده</string>
+    <string name="sms_alert_notification_title">تراکنش بانکی جدید</string>
+    <string name="sms_alert_notification_text">تراکنش به مبلغ %1$s تومان شناسایی شد. برای ثبت کلیک کنید.</string>
+    <string name="pending_transactions_title">تایید تراکنش‌های جدید</string>
+    <string name="pending_transactions_subtitle">تراکنش‌های زیر از پیامک‌های بانکی شناسایی شده‌اند. لطفا آن‌ها را بررسی و تایید کنید.</string>
+    <string name="pending_transactions_delete">حذف تراکنش</string>
+</resources>

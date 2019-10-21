@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_ui_date_picker_title">انتخاب تاریخ</string>
+    <string name="core_ui_date_picker_confirm">تأیید</string>
+    <string name="core_ui_date_picker_cancel">انصراف</string>
+    <string name="core_ui_date_stepper_previous">قبلی</string>
+    <string name="core_ui_date_stepper_next">بعدی</string>
+    <string name="core_ui_time_picker_title">انتخاب زمان</string>
+    <string name="core_ui_time_picker_confirm">تأیید</string>
+    <string name="core_ui_time_picker_cancel">انصراف</string>
+    <string name="core_ui_time_stepper_increase">افزایش</string>
+    <string name="core_ui_time_stepper_decrease">کاهش</string>
+    <string name="core_ui_permission_screen_title">دسترسی مورد نیاز</string>
+    <string name="core_ui_permission_screen_headline">برای تشخیص خودکار تراکنش‌های بانکی</string>
+    <string name="core_ui_permission_screen_description">دسترسی‌های زیر مورد نیاز است تا برنامه بتواند پیامک‌های بانکی شما را به صورت خودکار ثبت کند.</string>
+    <string name="core_ui_permission_sms_title">دسترسی به پیامک</string>
+    <string name="core_ui_permission_sms_description">برای خواندن و شناسایی پیامک‌های بانکی</string>
+    <string name="core_ui_permission_notification_title">نمایش اعلان</string>
+    <string name="core_ui_permission_notification_description">برای نمایش تراکنش‌های شناسایی‌شده</string>
+    <string name="core_ui_permission_battery_title">اجرای پیوسته در پس‌زمینه</string>
+    <string name="core_ui_permission_battery_description">اطمینان از اینکه سرویس توسط سیستم متوقف نشود</string>
+    <string name="core_ui_permission_optional_label"> (توصیه‌شده)</string>
+    <string name="core_ui_permission_grant_action">اجازه</string>
+    <string name="core_ui_permission_back_home">بازگشت به خانه</string>
+    <string name="core_ui_permission_skip">نه ممنون، بعداً تنظیم می‌کنم</string>
+</resources>

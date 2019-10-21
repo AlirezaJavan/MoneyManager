@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_reports_impl_reports_tab_charts">نمودارها</string>
+    <string name="feature_reports_impl_reports_tab_search">جستجو</string>
+    <string name="feature_reports_impl_reports_period_expense">مخارج</string>
+    <string name="feature_reports_impl_reports_period_income">درآمد</string>
+    <string name="feature_reports_impl_reports_chart_by_category">بر اساس دسته‌بندی</string>
+    <string name="feature_reports_impl_reports_chart_daily">روزانه</string>
+    <string name="feature_reports_impl_reports_chart_monthly">ماهانه</string>
+    <string name="feature_reports_impl_reports_chart_empty_month">داده‌ای برای این ماه وجود ندارد</string>
+    <string name="feature_reports_impl_reports_chart_empty_range">داده‌ای در بازه انتخابی وجود ندارد</string>
+    <string name="feature_reports_impl_reports_category_breakdown_title">سهم دسته‌ها — %1$s</string>
+    <string name="feature_reports_impl_reports_daily_chart_title">روز به روز — %1$s</string>
+    <string name="feature_reports_impl_reports_monthly_chart_title">ماه به ماه</string>
+    <string name="feature_reports_impl_reports_monthly_comparison_title">مقایسه درآمد و مخارج</string>
+    <string name="feature_reports_impl_reports_trend_from_label">از:</string>
+    <string name="feature_reports_impl_reports_trend_to_label">تا:</string>
+    <string name="feature_reports_impl_reports_trend_from">از ماه</string>
+    <string name="feature_reports_impl_reports_trend_to">تا ماه</string>
+    <string name="feature_reports_impl_reports_search_title_hint">جستجو در عنوان</string>
+    <string name="feature_reports_impl_reports_search_category_label">دسته‌بندی</string>
+    <string name="feature_reports_impl_reports_search_category_hint">جستجو در دسته</string>
+    <string name="feature_reports_impl_reports_filter_type_label">نوع</string>
+    <string name="feature_reports_impl_reports_filter_all">همه</string>
+    <string name="feature_reports_impl_reports_filter_income">درآمد</string>
+    <string name="feature_reports_impl_reports_filter_expense">مخارج</string>
+    <string name="feature_reports_impl_reports_clear_filters">پاک کردن فیلترها</string>
+    <string name="feature_reports_impl_reports_search_empty">نتیجه‌ای یافت نشد</string>
+    <string name="feature_reports_impl_reports_search_results_count">%1$s نتیجه</string>
+    <string name="feature_reports_impl_reports_prev_month_desc">ماه قبل</string>
+    <string name="feature_reports_impl_reports_next_month_desc">ماه بعد</string>
+    <string name="feature_reports_impl_reports_summary_balance">مانده</string>
+    <string name="feature_reports_impl_reports_category_all">همه دسته‌ها</string>
+    <string name="feature_reports_impl_reports_search_income_total">جمع درآمد: %1$s</string>
+    <string name="feature_reports_impl_reports_search_expense_total">جمع مخارج: %1$s</string>
+</resources>
