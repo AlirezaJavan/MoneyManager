@@ -10,7 +10,6 @@ android {
 
 dependencies {
     api(projects.core.model)
-    implementation(projects.core.common)
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)

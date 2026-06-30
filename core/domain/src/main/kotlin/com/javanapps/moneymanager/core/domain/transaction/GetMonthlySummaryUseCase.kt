@@ -1,8 +1,8 @@
 package com.javanapps.moneymanager.core.domain.transaction
 
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.MonthlySummary
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

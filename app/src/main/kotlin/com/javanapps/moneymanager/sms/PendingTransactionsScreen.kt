@@ -46,8 +46,8 @@ import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionType
-import com.javanapps.moneymanager.core.ui.format.PersianNumber
-import com.javanapps.moneymanager.core.ui.format.ShamsiDateFormatter
+import io.github.alirezajavan.shamsipicker.format.PersianNumber
+import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

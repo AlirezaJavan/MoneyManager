@@ -1,5 +1,7 @@
 package com.javanapps.moneymanager.core.model
 
+import io.github.alirezajavan.shamsipicker.model.MonthKey
+
 /** Income vs expense totals for a period; balance is derived (مانده). */
 data class MonthlySummary(
     val incomeToman: Long,

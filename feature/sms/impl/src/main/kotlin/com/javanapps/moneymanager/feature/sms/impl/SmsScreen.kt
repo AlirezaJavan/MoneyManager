@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.javanapps.moneymanager.core.model.BankSmsRule
-import com.javanapps.moneymanager.core.ui.format.PersianNumber
+import io.github.alirezajavan.shamsipicker.format.PersianNumber
 
 @Composable
 fun SmsRoute(viewModel: SmsViewModel = hiltViewModel()) {

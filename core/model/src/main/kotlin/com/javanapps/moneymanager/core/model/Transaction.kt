@@ -1,5 +1,7 @@
 package com.javanapps.moneymanager.core.model
 
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
+
 /**
  * A single income or expense entry.
  *

@@ -42,8 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionType
-import com.javanapps.moneymanager.core.ui.format.PersianNumber
-import com.javanapps.moneymanager.core.ui.format.ShamsiDateFormatter
+import io.github.alirezajavan.shamsipicker.format.PersianNumber
+import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
 
 @Composable
 fun CategoriesRoute(viewModel: CategoriesViewModel = hiltViewModel()) {

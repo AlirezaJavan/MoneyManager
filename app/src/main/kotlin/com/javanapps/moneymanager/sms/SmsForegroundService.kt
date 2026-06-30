@@ -15,7 +15,6 @@ import android.provider.Telephony
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.javanapps.moneymanager.R
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.data.DefaultCategories
 import com.javanapps.moneymanager.core.data.repository.BankSmsRuleRepository
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
@@ -24,6 +23,7 @@ import com.javanapps.moneymanager.core.model.ParsedSms
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
