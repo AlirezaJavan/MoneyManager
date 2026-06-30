@@ -1,6 +1,22 @@
 # MoneyManager
 
-A Persian-first personal finance app for Android. Track income and expenses, browse reports with charts, and optionally let the app read bank SMS messages to log transactions automatically — all with a Shamsi (Jalali) calendar throughout.
+A Persian-first personal finance app for Android, built with Kotlin and Jetpack Compose. Track income and expenses, browse reports with charts, and optionally let the app read bank SMS messages to log transactions automatically — all with a Shamsi (Jalali) calendar and Persian-digit formatting throughout the UI. The app is protected behind a password/biometric lock screen and re-locks automatically whenever it leaves the foreground.
+
+---
+
+## Screenshots
+
+| Login | Home | Add / Edit Transaction |
+|---|---|---|
+| ![Login](screenshots/login.png) | ![Home](screenshots/home.png) | ![Add/Edit Transaction](screenshots/addedittransactions.png) |
+
+| Charts | Categories | Bank Rules |
+|---|---|---|
+| ![Charts](screenshots/charts.png) | ![Categories](screenshots/categories.png) | ![Bank Rules](screenshots/bankrules.png) |
+
+| Settings | Data Export | Overlay Screen |
+|---|---|---|
+| ![Settings](screenshots/settings.png) | ![Data Export](screenshots/dataexport.png) | ![Overlay Screen](screenshots/overlayscreen.png) |
 
 ---
 
@@ -11,7 +27,7 @@ A Persian-first personal finance app for Android. Track income and expenses, bro
 - **Reports** — Category-breakdown pie/bar charts, daily-total charts, monthly trend charts, and a full-text/category/type search over all transactions.
 - **Automatic SMS parsing** — An optional foreground service reads incoming bank SMS messages, matches them against configurable per-bank rules, and prompts the user to save the parsed transaction. A "teach" screen lets users create new bank rules from a sample SMS body.
 - **Categories** — Manage custom income and expense categories; delete with reassignment or bulk-delete of linked transactions.
-- **Authentication** — PIN code lock screen with optional biometric (fingerprint) unlock.
+- **Authentication** — Password lock screen with optional biometric (fingerprint) unlock; the app automatically re-locks when it's backgrounded or closed.
 - **Settings** — Toggle the SMS service, biometric auth, and dark/light/system theme.
 - **Legacy migration** — One-time import wizard that reads the SQLite database from the previous version of the app and migrates all transactions and categories.
 - **Home-screen widget** — Glance-based widget showing the current month's balance at a glance.
