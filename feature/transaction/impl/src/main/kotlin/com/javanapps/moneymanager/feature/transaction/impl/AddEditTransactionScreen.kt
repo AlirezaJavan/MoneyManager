@@ -40,11 +40,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.model.TransactionType
-import com.javanapps.moneymanager.core.ui.component.ShamsiDatePickerDialog
-import com.javanapps.moneymanager.core.ui.component.ShamsiTimePickerDialog
-import com.javanapps.moneymanager.core.ui.format.ShamsiDateFormatter
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
+import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
+import io.github.alirezajavan.shamsipicker.model.ShamsiDatePickerConfig
+import io.github.alirezajavan.shamsipicker.model.ShamsiTime
+import io.github.alirezajavan.shamsipicker.model.ShamsiTimePickerConfig
+import io.github.alirezajavan.shamsipicker.ui.ShamsiDatePickerDialog
+import io.github.alirezajavan.shamsipicker.ui.ShamsiTimePickerDialog
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate as PickerDate
 
 @Composable
 fun AddEditTransactionRoute(
@@ -87,7 +92,7 @@ internal fun AddEditTransactionScreen(
     onTitleChange: (String) -> Unit,
     onNoteChange: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
-    onDateChange: (com.javanapps.moneymanager.core.model.ShamsiDate) -> Unit,
+    onDateChange: (PickerDate) -> Unit,
     onTimeChange: (Int, Int) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
@@ -243,13 +248,24 @@ internal fun AddEditTransactionScreen(
     val entryNow = remember { ShamsiCalendar.now() }
     if (showDatePicker) {
         ShamsiDatePickerDialog(
-            initialDate = uiState.date,
-            onConfirm = {
-                onDateChange(it)
+            onConfirm = { date ->
+                onDateChange(
+                    ShamsiDate(
+                        date.year,
+                        date.month,
+                        date.day,
+                        uiState.date.hour,
+                        uiState.date.minute,
+                    ),
+                )
                 showDatePicker = false
             },
             onDismiss = { showDatePicker = false },
-            maxDate = entryNow,
+            config =
+                ShamsiDatePickerConfig(
+                    initialDate = PickerDate(uiState.date.year, uiState.date.month, uiState.date.day),
+                    maxDate = PickerDate(entryNow.year, entryNow.month, entryNow.day),
+                ),
         )
     }
     if (showTimePicker) {
@@ -259,14 +275,16 @@ internal fun AddEditTransactionScreen(
                 uiState.date.month == entryNow.month &&
                 uiState.date.day == entryNow.day
         ShamsiTimePickerDialog(
-            initialHour = uiState.date.hour,
-            initialMinute = uiState.date.minute,
-            onConfirm = { h, m ->
-                onTimeChange(h, m)
+            onConfirm = { time ->
+                onTimeChange(time.hour, time.minute)
                 showTimePicker = false
             },
             onDismiss = { showTimePicker = false },
-            maxTotalMinutes = if (onEntryDay) entryNow.hour * 60 + entryNow.minute else null,
+            config =
+                ShamsiTimePickerConfig(
+                    initialTime = ShamsiTime(uiState.date.hour, uiState.date.minute),
+                    maxTime = if (onEntryDay) ShamsiTime(entryNow.hour, entryNow.minute) else null,
+                ),
         )
     }
 }

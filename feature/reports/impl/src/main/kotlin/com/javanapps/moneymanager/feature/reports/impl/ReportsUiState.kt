@@ -4,10 +4,10 @@ import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.CategoryAmount
 import com.javanapps.moneymanager.core.model.DayAmount
 import com.javanapps.moneymanager.core.model.MonthAmount
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.MonthlySummary
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 
 enum class ReportsTab { CHARTS, SEARCH }
 

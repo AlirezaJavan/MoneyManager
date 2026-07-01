@@ -1,13 +1,13 @@
 package com.javanapps.moneymanager.core.data.legacy
 
 import android.database.sqlite.SQLiteDatabase
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.MigrationData
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 import java.io.File
 import javax.inject.Inject
 import kotlin.math.abs

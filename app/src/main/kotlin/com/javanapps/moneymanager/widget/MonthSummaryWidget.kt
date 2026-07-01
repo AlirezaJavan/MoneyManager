@@ -29,13 +29,13 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.javanapps.moneymanager.MainActivity
 import com.javanapps.moneymanager.R
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
 import com.javanapps.moneymanager.core.model.MonthlySummary
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import kotlinx.coroutines.flow.first
 import kotlin.math.abs
 

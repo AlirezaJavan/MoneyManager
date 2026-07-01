@@ -1,10 +1,10 @@
 package com.javanapps.moneymanager.core.database.model
 
 import androidx.room.ColumnInfo
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 
 /** Result type for DAO queries that JOIN transactions with categories to resolve the category name. */
 data class TransactionWithCategory(

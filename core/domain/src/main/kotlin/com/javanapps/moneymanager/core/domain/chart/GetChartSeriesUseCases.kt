@@ -3,8 +3,8 @@ package com.javanapps.moneymanager.core.domain.chart
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
 import com.javanapps.moneymanager.core.model.DayAmount
 import com.javanapps.moneymanager.core.model.MonthAmount
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

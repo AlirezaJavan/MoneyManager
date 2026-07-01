@@ -69,7 +69,6 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.javanapps.moneymanager.R
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.data.DefaultCategories
 import com.javanapps.moneymanager.core.data.repository.CategoryRepository
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
@@ -81,8 +80,9 @@ import com.javanapps.moneymanager.core.model.ParsedSms
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
-import com.javanapps.moneymanager.core.ui.format.PersianNumber
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
+import io.github.alirezajavan.shamsipicker.format.PersianNumber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -172,7 +172,8 @@ class SmsOverlayManager
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                         WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
                     PixelFormat.TRANSLUCENT,
                 )
 

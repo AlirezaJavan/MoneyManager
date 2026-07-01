@@ -10,10 +10,7 @@ android {
 dependencies {
     api(projects.core.designsystem)
     api(projects.core.model)
-    api(projects.core.common)
-
-    implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.kotlinx.collections.immutable)
+    api(libs.shamsi.picker)
 
     testImplementation(libs.junit)
     testImplementation(libs.truth)

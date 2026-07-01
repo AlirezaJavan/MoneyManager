@@ -1,8 +1,8 @@
 package com.javanapps.moneymanager.feature.transaction.impl
 
 import com.javanapps.moneymanager.core.model.Category
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 
 data class AddEditTransactionUiState(
     val editingId: Long? = null,

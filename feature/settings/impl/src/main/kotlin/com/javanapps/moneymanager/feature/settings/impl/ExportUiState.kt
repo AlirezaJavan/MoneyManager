@@ -1,7 +1,7 @@
 package com.javanapps.moneymanager.feature.settings.impl
 
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 
 data class ExportUiState(
     val filterFromMonth: MonthKey? = null,

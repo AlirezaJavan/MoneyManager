@@ -4,5 +4,6 @@ plugins {
 }
 
 dependencies {
+    api(libs.shamsi.core)
     implementation(libs.kotlinx.serialization.json)
 }

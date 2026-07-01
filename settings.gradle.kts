@@ -34,7 +34,6 @@ check(JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
 
 // Core modules
 include(":core:model")
-include(":core:common")
 include(":core:designsystem")
 include(":core:ui")
 include(":core:database")

@@ -2,7 +2,6 @@ package com.javanapps.moneymanager.feature.reports.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.javanapps.moneymanager.core.common.calendar.ShamsiCalendar
 import com.javanapps.moneymanager.core.domain.category.GetCategoriesUseCase
 import com.javanapps.moneymanager.core.domain.chart.GetDailyTotalsUseCase
 import com.javanapps.moneymanager.core.domain.chart.GetMonthlyTotalsUseCase
@@ -13,12 +12,13 @@ import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.CategoryAmount
 import com.javanapps.moneymanager.core.model.DayAmount
 import com.javanapps.moneymanager.core.model.MonthAmount
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.MonthlySummary
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionFilter
 import com.javanapps.moneymanager.core.model.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
