@@ -4,12 +4,12 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.javanapps.moneymanager.core.domain.transaction.GetMonthTransactionsUseCase
 import com.javanapps.moneymanager.core.domain.transaction.GetMonthlySummaryUseCase
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
 import com.javanapps.moneymanager.core.testing.repository.TestTransactionRepository
 import com.javanapps.moneymanager.core.testing.util.MainDispatcherRule
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule

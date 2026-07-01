@@ -2,12 +2,12 @@ package com.javanapps.moneymanager.core.domain.category
 
 import com.google.common.truth.Truth.assertThat
 import com.javanapps.moneymanager.core.model.Category
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
 import com.javanapps.moneymanager.core.testing.repository.TestCategoryRepository
 import com.javanapps.moneymanager.core.testing.repository.TestTransactionRepository
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
