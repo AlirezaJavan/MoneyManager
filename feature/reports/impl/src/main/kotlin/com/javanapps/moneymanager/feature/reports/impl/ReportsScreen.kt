@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -281,22 +282,25 @@ private fun MonthlySummaryCard(
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 SummaryItem(
                     label = stringResource(R.string.feature_reports_impl_reports_period_income),
                     amount = summary.incomeToman,
                     color = IncomeGreen,
+                    modifier = Modifier.weight(1f),
                 )
                 SummaryItem(
                     label = stringResource(R.string.feature_reports_impl_reports_period_expense),
                     amount = summary.expenseToman,
                     color = ExpenseRed,
+                    modifier = Modifier.weight(1f),
                 )
                 SummaryItem(
                     label = stringResource(R.string.feature_reports_impl_reports_summary_balance),
                     amount = summary.balanceToman,
                     color = if (summary.balanceToman >= 0) IncomeGreen else ExpenseRed,
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -308,11 +312,24 @@ private fun SummaryItem(
     label: String,
     amount: Long,
     color: Color,
+    modifier: Modifier = Modifier,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(2.dp))
-        Text(PersianNumber.toman(amount), style = MaterialTheme.typography.bodyMedium, color = color)
+        Text(
+            PersianNumber.toman(amount),
+            style = MaterialTheme.typography.bodyMedium,
+            color = color,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -929,6 +946,8 @@ private fun SearchResultRow(
                 PersianNumber.toman(tx.amountToman),
                 style = MaterialTheme.typography.bodyMedium,
                 color = amountColor,
+                maxLines = 1,
+                softWrap = false,
             )
             Icon(
                 Icons.Default.Edit,
