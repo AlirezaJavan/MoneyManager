@@ -139,11 +139,26 @@ private fun SummaryCard(
     Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SummaryItem(stringResource(R.string.feature_home_impl_home_label_income), incomeToman, IncomeGreen)
-            SummaryItem(stringResource(R.string.feature_home_impl_home_label_expense), expenseToman, ExpenseRed)
-            SummaryItem(stringResource(R.string.feature_home_impl_home_label_balance), balanceToman, MaterialTheme.colorScheme.onSurface)
+            SummaryItem(
+                stringResource(R.string.feature_home_impl_home_label_income),
+                incomeToman,
+                IncomeGreen,
+                Modifier.weight(1f),
+            )
+            SummaryItem(
+                stringResource(R.string.feature_home_impl_home_label_expense),
+                expenseToman,
+                ExpenseRed,
+                Modifier.weight(1f),
+            )
+            SummaryItem(
+                stringResource(R.string.feature_home_impl_home_label_balance),
+                balanceToman,
+                MaterialTheme.colorScheme.onSurface,
+                Modifier.weight(1f),
+            )
         }
     }
 }
@@ -153,13 +168,21 @@ private fun SummaryItem(
     label: String,
     amount: Long,
     color: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier,
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Text(
             text = PersianNumber.toman(amount),
             style = MaterialTheme.typography.titleSmall,
             color = color,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -200,7 +223,7 @@ private fun TransactionRow(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(text = transaction.title.ifBlank { transaction.categoryName }, style = MaterialTheme.typography.bodyLarge)
                 Text(
                     text = "${transaction.categoryName} • ${ShamsiDateFormatter.short(transaction.date)}",
@@ -211,6 +234,9 @@ private fun TransactionRow(
                 text = PersianNumber.toman(transaction.amountToman),
                 style = MaterialTheme.typography.titleSmall,
                 color = if (transaction.type == TransactionType.EXPENSE) ExpenseRed else IncomeGreen,
+                maxLines = 1,
+                softWrap = false,
+                modifier = Modifier.padding(start = 8.dp),
             )
         }
     }
