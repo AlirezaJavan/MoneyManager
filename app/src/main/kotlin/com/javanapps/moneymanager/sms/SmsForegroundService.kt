@@ -1,5 +1,6 @@
 package com.javanapps.moneymanager.sms
 
+import android.app.KeyguardManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -100,7 +101,11 @@ class SmsForegroundService : Service() {
                     ),
                 )
             withContext(Dispatchers.Main) {
-                if (smsOverlayManager.canShow()) {
+                // A TYPE_APPLICATION_OVERLAY window (used by smsOverlayManager) can't dismiss a secure
+                // keyguard, unlike an Activity window - so route through the full-screen-intent
+                // notification (SmsConfirmActivity) whenever the device is locked.
+                val keyguard = getSystemService(KeyguardManager::class.java)
+                if (smsOverlayManager.canShow() && keyguard?.isKeyguardLocked != true) {
                     smsOverlayManager.show(id, parsed, serviceScope)
                 } else {
                     showConfirmationNotification(id, parsed)

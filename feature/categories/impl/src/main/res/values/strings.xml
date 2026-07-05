@@ -11,9 +11,12 @@
     <string name="feature_categories_impl_categories_action_save">ذخیره</string>
     <string name="feature_categories_impl_categories_action_cancel">انصراف</string>
     <string name="feature_categories_impl_categories_deletion_title">حذف دسته «%1$s»</string>
-    <string name="feature_categories_impl_categories_deletion_message">این دسته %1$s تراکنش دارد. برای فعال شدن دکمه حذف، دسته‌بندی همه تراکنش‌ها را تغییر دهید.</string>
+    <string name="feature_categories_impl_categories_deletion_message">این دسته %1$s تراکنش دارد. می‌توانید هر تراکنش را جداگانه منتقل یا حذف کنید، یا با دکمه زیر همه آن‌ها را همراه با دسته حذف کنید.</string>
     <string name="feature_categories_impl_categories_deletion_ready">آیا از حذف این دسته اطمینان دارید؟ تراکنشی به این دسته متصل نیست.</string>
     <string name="feature_categories_impl_categories_deletion_edit_desc">تغییر دسته تراکنش</string>
     <string name="feature_categories_impl_categories_deletion_delete">حذف دسته</string>
     <string name="feature_categories_impl_categories_picker_title">انتخاب دسته جدید</string>
+    <string name="feature_categories_impl_categories_force_delete_title">حذف تراکنش‌های مرتبط</string>
+    <string name="feature_categories_impl_categories_force_delete_message">حذف این دسته، %1$s تراکنش مرتبط با آن را نیز برای همیشه حذف می‌کند. آیا مطمئن هستید؟</string>
+    <string name="feature_categories_impl_categories_force_delete_confirm">بله، حذف شود</string>
 </resources>

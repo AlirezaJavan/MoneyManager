@@ -2,11 +2,14 @@ package com.javanapps.moneymanager.feature.transaction.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.GetCategoriesUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
 import com.javanapps.moneymanager.core.domain.transaction.AddTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.DeleteTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.GetTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.UpdateTransactionUseCase
+import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
@@ -56,6 +59,8 @@ class AddEditTransactionViewModel
         private val addTransaction: AddTransactionUseCase,
         private val updateTransaction: UpdateTransactionUseCase,
         private val deleteTransaction: DeleteTransactionUseCase,
+        private val addCategory: AddCategoryUseCase,
+        private val renameCategory: RenameCategoryUseCase,
     ) : ViewModel() {
         private val form = MutableStateFlow(FormState(date = ShamsiCalendar.now()))
 
@@ -150,6 +155,26 @@ class AddEditTransactionViewModel
         fun onNoteChange(value: String) = form.update { it.copy(note = value) }
 
         fun onCategorySelected(name: String) = form.update { it.copy(selectedCategory = name) }
+
+        fun onAddCategory(name: String) {
+            val type = form.value.type
+            viewModelScope.launch {
+                addCategory(name, type)
+                form.update { it.copy(selectedCategory = name) }
+            }
+        }
+
+        fun onRenameCategory(
+            category: Category,
+            newName: String,
+        ) {
+            viewModelScope.launch {
+                renameCategory(category.id, newName)
+                if (form.value.selectedCategory == category.name) {
+                    form.update { it.copy(selectedCategory = newName) }
+                }
+            }
+        }
 
         fun onDateChange(date: ShamsiDate) =
             form.update { it.copy(date = it.date.copy(year = date.year, month = date.month, day = date.day)) }

@@ -6,6 +6,7 @@ import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.DeleteCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.GetCategoriesUseCase
 import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
+import com.javanapps.moneymanager.core.domain.transaction.DeleteTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.SearchTransactionsUseCase
 import com.javanapps.moneymanager.core.domain.transaction.UpdateTransactionUseCase
 import com.javanapps.moneymanager.core.model.Category
@@ -36,6 +37,7 @@ class CategoriesViewModel
         private val deleteCategory: DeleteCategoryUseCase,
         private val searchTransactions: SearchTransactionsUseCase,
         private val updateTransaction: UpdateTransactionUseCase,
+        private val deleteTransaction: DeleteTransactionUseCase,
     ) : ViewModel() {
         private val selectedType = MutableStateFlow(TransactionType.EXPENSE)
 
@@ -91,12 +93,20 @@ class CategoriesViewModel
             viewModelScope.launch { updateTransaction(transaction.copy(categoryName = newCategoryName)) }
         }
 
-        /** Deletes the category once all transactions have been reassigned. */
-        fun confirmDelete() {
+        /** Deletes a single linked transaction, e.g. from the deletion dialog's transaction list. */
+        fun deleteTransaction(transaction: Transaction) {
+            viewModelScope.launch { deleteTransaction(transaction.id) }
+        }
+
+        /**
+         * Deletes the category. If it still has linked transactions, [force] must be true (the caller
+         * shows a warning dialog first) - the linked transactions are deleted along with the category.
+         */
+        fun confirmDelete(force: Boolean = false) {
             val request = deletionRequest.value ?: return
-            if (request.linkedTransactions.isNotEmpty()) return
+            if (request.linkedTransactions.isNotEmpty() && !force) return
             viewModelScope.launch {
-                deleteCategory(request.category)
+                deleteCategory(request.category, deleteTransactions = request.linkedTransactions.isNotEmpty())
                 _deletionCategory.value = null
             }
         }

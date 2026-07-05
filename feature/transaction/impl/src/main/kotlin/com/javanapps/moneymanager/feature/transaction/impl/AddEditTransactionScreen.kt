@@ -13,11 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,7 +36,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.TransactionType
+import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
+import com.javanapps.moneymanager.core.ui.component.CategoryRenameDialog
 import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
 import io.github.alirezajavan.shamsipicker.model.ShamsiDate
@@ -75,6 +74,8 @@ fun AddEditTransactionRoute(
         onTitleChange = viewModel::onTitleChange,
         onNoteChange = viewModel::onNoteChange,
         onCategorySelected = viewModel::onCategorySelected,
+        onAddCategory = viewModel::onAddCategory,
+        onRenameCategory = viewModel::onRenameCategory,
         onDateChange = viewModel::onDateChange,
         onTimeChange = viewModel::onTimeChange,
         onSave = viewModel::save,
@@ -92,6 +93,8 @@ internal fun AddEditTransactionScreen(
     onTitleChange: (String) -> Unit,
     onNoteChange: (String) -> Unit,
     onCategorySelected: (String) -> Unit,
+    onAddCategory: (String) -> Unit,
+    onRenameCategory: (Category, String) -> Unit,
     onDateChange: (PickerDate) -> Unit,
     onTimeChange: (Int, Int) -> Unit,
     onSave: () -> Unit,
@@ -100,7 +103,7 @@ internal fun AddEditTransactionScreen(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-    var categoryExpanded by remember { mutableStateOf(false) }
+    var renameTarget by remember { mutableStateOf<Category?>(null) }
     var amountFieldValue by remember(uiState.amountText) {
         mutableStateOf(TextFieldValue(text = uiState.amountText, selection = TextRange(uiState.amountText.length)))
     }
@@ -186,33 +189,15 @@ internal fun AddEditTransactionScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = it },
-            ) {
-                OutlinedTextField(
-                    value = uiState.selectedCategory.orEmpty(),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.feature_transaction_impl_transaction_label_category)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(categoryExpanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                )
-                ExposedDropdownMenu(
-                    expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false },
-                ) {
-                    uiState.categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(category.name) },
-                            onClick = {
-                                onCategorySelected(category.name)
-                                categoryExpanded = false
-                            },
-                        )
-                    }
-                }
-            }
+            CategoryPickerField(
+                categories = uiState.categories,
+                selectedName = uiState.selectedCategory,
+                onSelect = onCategorySelected,
+                onAddCategory = onAddCategory,
+                onEditCategory = { renameTarget = it },
+                label = stringResource(R.string.feature_transaction_impl_transaction_label_category),
+                modifier = Modifier.fillMaxWidth(),
+            )
 
             OutlinedTextField(
                 value = uiState.title,
@@ -285,6 +270,14 @@ internal fun AddEditTransactionScreen(
                     initialTime = ShamsiTime(uiState.date.hour, uiState.date.minute),
                     maxTime = if (onEntryDay) ShamsiTime(entryNow.hour, entryNow.minute) else null,
                 ),
+        )
+    }
+
+    renameTarget?.let { target ->
+        CategoryRenameDialog(
+            category = target,
+            onConfirm = { newName -> onRenameCategory(target, newName) },
+            onDismiss = { renameTarget = null },
         )
     }
 }

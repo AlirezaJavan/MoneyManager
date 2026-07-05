@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.javanapps.moneymanager.core.data.repository.CategoryRepository
 import com.javanapps.moneymanager.core.data.repository.PreferencesRepository
+import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
 import com.javanapps.moneymanager.core.domain.transaction.DeleteTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.GetPendingTransactionsUseCase
 import com.javanapps.moneymanager.core.domain.transaction.UpdateTransactionUseCase
@@ -25,6 +27,8 @@ class MainScaffoldViewModel
         private val updateTransaction: UpdateTransactionUseCase,
         private val deleteTransaction: DeleteTransactionUseCase,
         val categoryRepository: CategoryRepository,
+        val addCategoryUseCase: AddCategoryUseCase,
+        val renameCategoryUseCase: RenameCategoryUseCase,
     ) : ViewModel() {
         val userData: StateFlow<UserData?> =
             preferencesRepository.userData
