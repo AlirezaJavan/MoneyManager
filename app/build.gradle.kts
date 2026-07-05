@@ -16,8 +16,8 @@ android {
 
     defaultConfig {
         applicationId = "javan.moneymanager"
-        versionCode = 19
-        versionName = "2.1.3"
+        versionCode = 20
+        versionName = "2.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
