@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.BatteryChargingFull
@@ -59,77 +61,85 @@ fun SmsPermissionRequestScreen(
                 .fillMaxSize()
                 .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Spacer(Modifier.height(32.dp))
-
-        // Header icon
-        Box(
+        Column(
             modifier =
                 Modifier
-                    .size(80.dp)
-                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-            contentAlignment = Alignment.Center,
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Icon(
-                Icons.AutoMirrored.Filled.Message,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            Spacer(Modifier.height(32.dp))
+
+            // Header icon
+            Box(
+                modifier =
+                    Modifier
+                        .size(80.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.Message,
+                    contentDescription = null,
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+
+            Text(
+                stringResource(R.string.core_ui_permission_screen_headline),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+            )
+
+            Text(
+                stringResource(R.string.core_ui_permission_screen_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            PermissionItem(
+                icon = Icons.AutoMirrored.Filled.Message,
+                title = stringResource(R.string.core_ui_permission_sms_title),
+                description = stringResource(R.string.core_ui_permission_sms_description),
+                granted = hasSmsPermission,
+                onRequest = onRequestSms,
+            )
+
+            PermissionItem(
+                icon = Icons.Default.NotificationsActive,
+                title = stringResource(R.string.core_ui_permission_notification_title),
+                description = stringResource(R.string.core_ui_permission_notification_description),
+                granted = hasNotificationPermission,
+                onRequest = onRequestNotification,
+            )
+
+            PermissionItem(
+                icon = Icons.Default.Layers,
+                title = stringResource(R.string.core_ui_permission_overlay_title),
+                description = stringResource(R.string.core_ui_permission_overlay_description),
+                granted = hasOverlayPermission,
+                onRequest = onRequestOverlay,
+                optional = true,
+            )
+
+            PermissionItem(
+                icon = Icons.Default.BatteryChargingFull,
+                title = stringResource(R.string.core_ui_permission_battery_title),
+                description = stringResource(R.string.core_ui_permission_battery_description),
+                granted = !isBatteryOptimized,
+                onRequest = onRequestBatteryOptimization,
+                optional = true,
             )
         }
 
-        Text(
-            stringResource(R.string.core_ui_permission_screen_headline),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-
-        Text(
-            stringResource(R.string.core_ui_permission_screen_description),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        PermissionItem(
-            icon = Icons.AutoMirrored.Filled.Message,
-            title = stringResource(R.string.core_ui_permission_sms_title),
-            description = stringResource(R.string.core_ui_permission_sms_description),
-            granted = hasSmsPermission,
-            onRequest = onRequestSms,
-        )
-
-        PermissionItem(
-            icon = Icons.Default.NotificationsActive,
-            title = stringResource(R.string.core_ui_permission_notification_title),
-            description = stringResource(R.string.core_ui_permission_notification_description),
-            granted = hasNotificationPermission,
-            onRequest = onRequestNotification,
-        )
-
-        PermissionItem(
-            icon = Icons.Default.Layers,
-            title = stringResource(R.string.core_ui_permission_overlay_title),
-            description = stringResource(R.string.core_ui_permission_overlay_description),
-            granted = hasOverlayPermission,
-            onRequest = onRequestOverlay,
-            optional = true,
-        )
-
-        PermissionItem(
-            icon = Icons.Default.BatteryChargingFull,
-            title = stringResource(R.string.core_ui_permission_battery_title),
-            description = stringResource(R.string.core_ui_permission_battery_description),
-            granted = !isBatteryOptimized,
-            onRequest = onRequestBatteryOptimization,
-            optional = true,
-        )
-
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(16.dp))
 
         AnimatedVisibility(hasSmsPermission) {
             Button(onClick = onSkip, modifier = Modifier.fillMaxWidth()) {
@@ -201,21 +211,19 @@ private fun PermissionItem(
             }
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                    if (optional) {
-                        Text(
-                            stringResource(R.string.core_ui_permission_optional_label),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                }
+                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                 Text(
                     description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (optional) {
+                    Text(
+                        stringResource(R.string.core_ui_permission_optional_label),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
 
             if (!granted) {

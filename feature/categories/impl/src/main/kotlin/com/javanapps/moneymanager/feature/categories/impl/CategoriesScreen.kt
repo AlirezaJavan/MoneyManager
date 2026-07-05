@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,6 +81,10 @@ internal fun CategoriesScreen(
     var renameTarget by remember { mutableStateOf<Category?>(null) }
 
     Scaffold(
+        // MainScaffold's outer Scaffold already applies the safe-drawing insets as content
+        // padding; without this, this nested Scaffold would apply them a second time and
+        // push the tab row down by an extra status-bar height.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(onClick = { showAddDialog = true }) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.feature_categories_impl_categories_add_desc))

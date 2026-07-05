@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -131,8 +132,14 @@ internal fun ExportScreen(
     }
 
     Scaffold(
+        // MainScaffold's outer Scaffold already applies the safe-drawing insets as content
+        // padding; without zeroing these out, this nested Scaffold (and its TopAppBar's
+        // own default status-bar inset) would apply them a second time, doubling the gap
+        // above the app bar.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = { Text(stringResource(R.string.feature_settings_impl_export_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {

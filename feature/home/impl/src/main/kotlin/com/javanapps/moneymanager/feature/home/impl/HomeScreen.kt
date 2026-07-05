@@ -3,6 +3,7 @@ package com.javanapps.moneymanager.feature.home.impl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -69,6 +70,10 @@ internal fun HomeScreen(
     onEditTransaction: (Long) -> Unit,
 ) {
     Scaffold(
+        // MainScaffold's outer Scaffold already applies the safe-drawing insets as content
+        // padding; without this, this nested Scaffold would apply them a second time and
+        // push the month header down by an extra status-bar height.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTransaction) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.feature_home_impl_home_add_transaction_desc))
@@ -221,7 +226,7 @@ private fun SummaryItem(
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            text = PersianNumber.toman(amount),
+            text = ltrAmount(PersianNumber.toman(amount)),
             style = MaterialTheme.typography.titleSmall,
             color = color,
             textAlign = TextAlign.Center,
@@ -229,6 +234,13 @@ private fun SummaryItem(
         )
     }
 }
+
+/**
+ * Prefixes a formatted amount with a left-to-right mark so the bidi algorithm keeps a negative
+ * sign attached to its digits (e.g. "-۱٬۰۰۰") instead of moving it to the visual end of the
+ * string inside our RTL layout direction.
+ */
+private fun ltrAmount(text: String): String = "\u200E$text"
 
 @Composable
 private fun FilterRow(
@@ -291,7 +303,7 @@ private fun DaySummaryRow(
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-                text = PersianNumber.toman(daySummary.netToman),
+                text = ltrAmount(PersianNumber.toman(daySummary.netToman)),
                 style = MaterialTheme.typography.titleSmall,
                 color = if (daySummary.netToman < 0) ExpenseRed else IncomeGreen,
                 maxLines = 1,
