@@ -2,7 +2,9 @@ package com.javanapps.moneymanager.feature.transaction.impl
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.GetCategoriesUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
 import com.javanapps.moneymanager.core.domain.transaction.AddTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.DeleteTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.GetTransactionUseCase
@@ -43,6 +45,8 @@ class AddEditTransactionViewModelTest {
                 addTransaction = AddTransactionUseCase(transactionRepository),
                 updateTransaction = UpdateTransactionUseCase(transactionRepository),
                 deleteTransaction = DeleteTransactionUseCase(transactionRepository),
+                addCategory = AddCategoryUseCase(categoryRepository),
+                renameCategory = RenameCategoryUseCase(categoryRepository),
             )
     }
 
@@ -166,6 +170,29 @@ class AddEditTransactionViewModelTest {
             }
 
             assertThat(transactionRepository.get(7L)).isNull()
+        }
+
+    @Test
+    fun onAddCategory_createsAndSelectsIt() =
+        runTest {
+            viewModel.onAddCategory("قبوض")
+
+            viewModel.uiState.test {
+                assertThat(expectMostRecentItem().selectedCategory).isEqualTo("قبوض")
+            }
+            assertThat(categoryRepository.exists("قبوض", TransactionType.EXPENSE)).isTrue()
+        }
+
+    @Test
+    fun onRenameCategory_updatesSelectionWhenRenamingCurrentCategory() =
+        runTest {
+            viewModel.onCategorySelected("خوراک")
+
+            viewModel.onRenameCategory(Category(1, "خوراک", TransactionType.EXPENSE), "غذا")
+
+            viewModel.uiState.test {
+                assertThat(expectMostRecentItem().selectedCategory).isEqualTo("غذا")
+            }
         }
 
     @Test

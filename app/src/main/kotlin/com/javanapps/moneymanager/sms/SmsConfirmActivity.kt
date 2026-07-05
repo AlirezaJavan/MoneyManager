@@ -19,11 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,10 +46,12 @@ import com.javanapps.moneymanager.core.data.repository.TransactionRepository
 import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
 import com.javanapps.moneymanager.core.designsystem.theme.MoneyManagerTheme
+import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
 import com.javanapps.moneymanager.core.model.ParsedSms
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
+import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.PersianNumber
@@ -64,6 +63,8 @@ class SmsConfirmActivity : ComponentActivity() {
     @Inject lateinit var transactionRepository: TransactionRepository
 
     @Inject lateinit var categoryRepository: CategoryRepository
+
+    @Inject lateinit var addCategoryUseCase: AddCategoryUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +105,7 @@ class SmsConfirmActivity : ComponentActivity() {
                         SmsConfirmScreen(
                             parsed = parsed,
                             categoryRepository = categoryRepository,
+                            addCategoryUseCase = addCategoryUseCase,
                             onSave = { tx ->
                                 lifecycleScope.launch {
                                     // Update the existing pending transaction and mark as confirmed
@@ -179,17 +181,18 @@ class SmsConfirmActivity : ComponentActivity() {
 private fun SmsConfirmScreen(
     parsed: ParsedSms,
     categoryRepository: CategoryRepository,
+    addCategoryUseCase: AddCategoryUseCase,
     onSave: (Transaction) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val categories by categoryRepository.observeAll().collectAsState(initial = emptyList())
+    val categories by categoryRepository.observeByType(parsed.type).collectAsState(initial = emptyList())
     val typeColor = if (parsed.type == TransactionType.INCOME) IncomeGreen else ExpenseRed
+    val coroutineScope = rememberCoroutineScope()
 
     var selectedCategory by remember {
         mutableStateOf(DefaultCategories.MISC)
     }
     var note by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
 
     Card(
         modifier =
@@ -222,30 +225,19 @@ private fun SmsConfirmScreen(
                 color = typeColor,
             )
 
-            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
-                OutlinedTextField(
-                    value = selectedCategory,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.sms_confirm_category_label)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    categories.filter { it.type == parsed.type }.forEach { cat ->
-                        DropdownMenuItem(
-                            text = { Text(cat.name) },
-                            onClick = {
-                                selectedCategory = cat.name
-                                expanded = false
-                            },
-                        )
+            CategoryPickerField(
+                categories = categories,
+                selectedName = selectedCategory,
+                onSelect = { selectedCategory = it },
+                onAddCategory = { name ->
+                    coroutineScope.launch {
+                        addCategoryUseCase(name, parsed.type)
+                        selectedCategory = name
                     }
-                }
-            }
+                },
+                label = stringResource(R.string.sms_confirm_category_label),
+                modifier = Modifier.fillMaxWidth(),
+            )
 
             OutlinedTextField(
                 value = note,

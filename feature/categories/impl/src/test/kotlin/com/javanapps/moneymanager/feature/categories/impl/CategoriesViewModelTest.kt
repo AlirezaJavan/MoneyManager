@@ -6,6 +6,7 @@ import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.DeleteCategoryUseCase
 import com.javanapps.moneymanager.core.domain.category.GetCategoriesUseCase
 import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
+import com.javanapps.moneymanager.core.domain.transaction.DeleteTransactionUseCase
 import com.javanapps.moneymanager.core.domain.transaction.SearchTransactionsUseCase
 import com.javanapps.moneymanager.core.domain.transaction.UpdateTransactionUseCase
 import com.javanapps.moneymanager.core.model.Category
@@ -39,6 +40,7 @@ class CategoriesViewModelTest {
                 deleteCategory = DeleteCategoryUseCase(categoryRepository, transactionRepository),
                 searchTransactions = SearchTransactionsUseCase(transactionRepository),
                 updateTransaction = UpdateTransactionUseCase(transactionRepository),
+                deleteTransaction = DeleteTransactionUseCase(transactionRepository),
             )
     }
 
@@ -98,6 +100,53 @@ class CategoriesViewModelTest {
             // But here the repository is fake and synchronous in its suspend methods.
 
             assertThat(categoryRepository.exists("Food", TransactionType.EXPENSE)).isFalse()
+        }
+
+    @Test
+    fun confirmDelete_withoutForce_doesNotDeleteWhenTransactionsLinked() =
+        runTest {
+            val cat = Category(id = 1, name = "Food", type = TransactionType.EXPENSE)
+            categoryRepository.setCategories(listOf(cat))
+            transactionRepository.add(
+                Transaction(1, 1000, TransactionType.EXPENSE, "Food", "Lunch", "", ShamsiDate(1403, 1, 1), 0, TransactionSource.MANUAL),
+            )
+
+            viewModel.onDeleteClicked(cat)
+            viewModel.deletionRequest.test { awaitItem() }
+
+            viewModel.confirmDelete()
+
+            assertThat(categoryRepository.exists("Food", TransactionType.EXPENSE)).isTrue()
+        }
+
+    @Test
+    fun confirmDelete_withForce_deletesCategoryAndLinkedTransactions() =
+        runTest {
+            val cat = Category(id = 1, name = "Food", type = TransactionType.EXPENSE)
+            categoryRepository.setCategories(listOf(cat))
+            transactionRepository.add(
+                Transaction(1, 1000, TransactionType.EXPENSE, "Food", "Lunch", "", ShamsiDate(1403, 1, 1), 0, TransactionSource.MANUAL),
+            )
+
+            viewModel.onDeleteClicked(cat)
+            viewModel.deletionRequest.test { awaitItem() }
+
+            viewModel.confirmDelete(force = true)
+
+            assertThat(categoryRepository.exists("Food", TransactionType.EXPENSE)).isFalse()
+            assertThat(transactionRepository.get(1)).isNull()
+        }
+
+    @Test
+    fun deleteTransaction_removesFromRepository() =
+        runTest {
+            val tx =
+                Transaction(1, 1000, TransactionType.EXPENSE, "Food", "Lunch", "", ShamsiDate(1403, 1, 1), 0, TransactionSource.MANUAL)
+            transactionRepository.add(tx)
+
+            viewModel.deleteTransaction(tx)
+
+            assertThat(transactionRepository.get(1)).isNull()
         }
 
     @Test

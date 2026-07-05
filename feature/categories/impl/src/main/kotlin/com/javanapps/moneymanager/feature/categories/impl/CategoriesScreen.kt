@@ -57,6 +57,7 @@ fun CategoriesRoute(viewModel: CategoriesViewModel = hiltViewModel()) {
         onRename = viewModel::renameCategory,
         onDelete = viewModel::onDeleteClicked,
         onReassignTransaction = viewModel::reassignTransaction,
+        onDeleteTransaction = viewModel::deleteTransaction,
         onConfirmDelete = viewModel::confirmDelete,
         onCancelDeletion = viewModel::cancelDeletion,
     )
@@ -71,7 +72,8 @@ internal fun CategoriesScreen(
     onRename: (Category, String) -> Unit,
     onDelete: (Category) -> Unit,
     onReassignTransaction: (Transaction, String) -> Unit,
-    onConfirmDelete: () -> Unit,
+    onDeleteTransaction: (Transaction) -> Unit,
+    onConfirmDelete: (force: Boolean) -> Unit,
     onCancelDeletion: () -> Unit,
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
@@ -166,6 +168,7 @@ internal fun CategoriesScreen(
         CategoryDeletionDialog(
             request = deletionRequest,
             onReassignTransaction = onReassignTransaction,
+            onDeleteTransaction = onDeleteTransaction,
             onDelete = onConfirmDelete,
             onDismiss = onCancelDeletion,
         )
@@ -205,10 +208,12 @@ private fun CategoryNameDialog(
 private fun CategoryDeletionDialog(
     request: CategoryDeletionRequest,
     onReassignTransaction: (Transaction, String) -> Unit,
-    onDelete: () -> Unit,
+    onDeleteTransaction: (Transaction) -> Unit,
+    onDelete: (force: Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var editingTransaction by remember { mutableStateOf<Transaction?>(null) }
+    var showForceDeleteWarning by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -245,6 +250,13 @@ private fun CategoryDeletionDialog(
                                         contentDescription = stringResource(R.string.feature_categories_impl_categories_deletion_edit_desc),
                                     )
                                 }
+                                IconButton(onClick = { onDeleteTransaction(tx) }) {
+                                    Icon(
+                                        Icons.Filled.Delete,
+                                        contentDescription =
+                                            stringResource(R.string.feature_categories_impl_categories_delete_desc),
+                                    )
+                                }
                             }
                         }
                     }
@@ -253,8 +265,9 @@ private fun CategoryDeletionDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = onDelete,
-                enabled = request.linkedTransactions.isEmpty(),
+                onClick = {
+                    if (request.linkedTransactions.isEmpty()) onDelete(false) else showForceDeleteWarning = true
+                },
             ) {
                 Text(stringResource(R.string.feature_categories_impl_categories_deletion_delete))
             }
@@ -274,6 +287,36 @@ private fun CategoryDeletionDialog(
                 editingTransaction = null
             },
             onDismiss = { editingTransaction = null },
+        )
+    }
+
+    if (showForceDeleteWarning) {
+        AlertDialog(
+            onDismissRequest = { showForceDeleteWarning = false },
+            title = { Text(stringResource(R.string.feature_categories_impl_categories_force_delete_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.feature_categories_impl_categories_force_delete_message,
+                        PersianNumber.toPersianDigits(request.linkedTransactions.size.toLong()),
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showForceDeleteWarning = false
+                        onDelete(true)
+                    },
+                ) {
+                    Text(stringResource(R.string.feature_categories_impl_categories_force_delete_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showForceDeleteWarning = false }) {
+                    Text(stringResource(R.string.feature_categories_impl_categories_action_cancel))
+                }
+            },
         )
     }
 }

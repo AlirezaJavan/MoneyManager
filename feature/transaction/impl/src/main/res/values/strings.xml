@@ -12,4 +12,7 @@
     <string name="feature_transaction_impl_transaction_error_amount">مبلغ معتبر وارد کنید</string>
     <string name="feature_transaction_impl_transaction_action_save">ذخیره</string>
     <string name="feature_transaction_impl_transaction_back_desc">بازگشت</string>
+    <string name="feature_transaction_impl_transaction_rename_category_title">ویرایش نام دسته</string>
+    <string name="feature_transaction_impl_transaction_rename_category_label">نام دسته</string>
+    <string name="feature_transaction_impl_transaction_action_cancel">انصراف</string>
 </resources>

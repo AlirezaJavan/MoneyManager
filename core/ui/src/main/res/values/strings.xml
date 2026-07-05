@@ -15,4 +15,7 @@
     <string name="core_ui_permission_grant_action">اجازه</string>
     <string name="core_ui_permission_back_home">بازگشت به خانه</string>
     <string name="core_ui_permission_skip">نه ممنون، بعداً تنظیم می‌کنم</string>
+
+    <string name="core_ui_category_picker_add">افزودن «%1$s»</string>
+    <string name="core_ui_category_picker_edit_desc">ویرایش دسته</string>
 </resources>
