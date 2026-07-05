@@ -103,7 +103,8 @@ class AddEditTransactionViewModel
             // If we are already editing this transaction, don't reload.
             // This prevents losing user input if the screen recomposes.
             val current = form.value
-            if (current.editingId == transactionId &&
+            if (!current.saved &&
+                current.editingId == transactionId &&
                 (transactionId != null || current.amountText.isNotEmpty() || current.title.isNotEmpty())
             ) {
                 return

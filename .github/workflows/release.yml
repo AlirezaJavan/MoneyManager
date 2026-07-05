@@ -102,3 +102,15 @@ jobs:
           files: |
             app/build/outputs/apk/release/money-manager-${{ needs.check.outputs.version_name }}.apk
             app/build/outputs/bundle/release/money-manager-${{ needs.check.outputs.version_name }}.aab
+
+      - name: Send APK to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          VERSION: ${{ needs.check.outputs.version_name }}
+        run: |
+          curl --fail -X POST \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+            -F chat_id="${TELEGRAM_CHAT_ID}" \
+            -F document=@"app/build/outputs/apk/release/money-manager-${VERSION}.apk" \
+            -F caption="Money Manager ${VERSION} release APK"
