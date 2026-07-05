@@ -203,7 +203,6 @@ class SmsForegroundService : Service() {
         private const val CHANNEL_ID_SERVICE = "sms_monitor"
         private const val CHANNEL_ID_ALERT = "sms_alerts"
         private const val NOTIFICATION_ID = 1001
-        private const val NOTIFICATION_ID_ALERT = 1002
 
         fun start(context: Context) {
             val intent = Intent(context, SmsForegroundService::class.java)

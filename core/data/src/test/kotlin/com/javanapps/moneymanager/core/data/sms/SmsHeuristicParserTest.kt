@@ -17,6 +17,22 @@ class SmsHeuristicParserTest {
 
     private val noRules = emptyList<BankSmsRule>()
 
+    private fun ruleFor(
+        sender: String = "Bank",
+        incomeKeywords: List<String> = listOf("واریز", "بستانکار"),
+        expenseKeywords: List<String> = listOf("برداشت", "خرید", "پرداخت"),
+        amountInRial: Boolean = true,
+    ) = BankSmsRule(
+        id = 1L,
+        senderPattern = sender,
+        bankName = "بانک",
+        incomeKeywords = incomeKeywords,
+        expenseKeywords = expenseKeywords,
+        amountInRial = amountInRial,
+        defaultCategory = "متفرقه",
+        sampleBody = "",
+    )
+
     // ─── OTP / ad rejection ──────────────────────────────────────────────────
 
     @Test
@@ -37,12 +53,18 @@ class SmsHeuristicParserTest {
         assertThat(parser.parse(body, "bank", noRules)).isNull()
     }
 
+    @Test
+    fun `unknown sender is ignored even with a bank-like body`() {
+        val body = "واریز 5,000,000 ریال به حساب شما"
+        assertThat(parser.parse(body, "UnknownSender", noRules)).isNull()
+    }
+
     // ─── Amount extraction ───────────────────────────────────────────────────
 
     @Test
     fun `Latin digits amount extracted correctly`() {
         val body = "واریز 5,000,000 ریال به حساب شما"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(500_000L) // 5M Rial / 10 = 500K Toman
     }
@@ -50,7 +72,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `Persian digits amount extracted correctly`() {
         val body = "برداشت ۲٬۵۰۰٬۰۰۰ ریال از حساب"
-        val result = parser.parse(body, "SenderBank", noRules)
+        val result = parser.parse(body, "SenderBank", listOf(ruleFor("SenderBank")))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(250_000L) // 2.5M Rial / 10
     }
@@ -58,7 +80,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `Arabic-Indic digits amount extracted`() {
         val body = "واریز ٥٠٠٠٠٠٠ ریال"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(500_000L)
     }
@@ -66,7 +88,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `amount in Toman is NOT divided by 10`() {
         val body = "پرداخت ۱۰۰٬۰۰۰ تومان - خرید آنلاین"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor(amountInRial = false)))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(100_000L)
     }
@@ -76,7 +98,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `واریز keyword signals income`() {
         val body = "واریز ۵٬۰۰۰٬۰۰۰ ریال به حساب جاری"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.type).isEqualTo(TransactionType.INCOME)
     }
@@ -84,7 +106,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `برداشت keyword signals expense`() {
         val body = "برداشت ۱٬۰۰۰٬۰۰۰ ریال از حساب شما"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.type).isEqualTo(TransactionType.EXPENSE)
     }
@@ -92,7 +114,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `خرید keyword signals expense`() {
         val body = "خرید ۲۰۰٬۰۰۰ تومان از فروشگاه"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.type).isEqualTo(TransactionType.EXPENSE)
     }
@@ -100,7 +122,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `بستانکار keyword signals income`() {
         val body = "حساب شما بستانکار ۸٬۰۰۰٬۰۰۰ ریال"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.type).isEqualTo(TransactionType.INCOME)
     }
@@ -184,7 +206,7 @@ class SmsHeuristicParserTest {
     @Test
     fun `high-confidence message is flagged correctly`() {
         val body = "واریز ۱۰٬۰۰۰٬۰۰۰ ریال - موجودی ۵۰٬۰۰۰٬۰۰۰ ریال - حساب جاری"
-        val result = parser.parse(body, "Bank", noRules)
+        val result = parser.parse(body, "Bank", listOf(ruleFor()))
         assertThat(result).isNotNull()
         assertThat(result!!.isHighConfidence).isTrue()
     }

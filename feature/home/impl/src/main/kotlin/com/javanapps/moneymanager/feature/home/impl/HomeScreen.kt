@@ -3,6 +3,7 @@ package com.javanapps.moneymanager.feature.home.impl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,8 +34,10 @@ import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.PersianNumber
 import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
+import io.github.alirezajavan.shamsipicker.model.MonthKey
 
 @Composable
 fun HomeRoute(
@@ -48,6 +51,8 @@ fun HomeRoute(
         onNextMonth = viewModel::onNextMonth,
         onPreviousMonth = viewModel::onPreviousMonth,
         onFilterChange = viewModel::onFilterChange,
+        onSelectDay = viewModel::onSelectDay,
+        onBackToDaySummary = viewModel::onBackToDaySummary,
         onAddTransaction = onAddTransaction,
         onEditTransaction = onEditTransaction,
     )
@@ -59,10 +64,16 @@ internal fun HomeScreen(
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
     onFilterChange: (HomeFilter) -> Unit,
+    onSelectDay: (Int) -> Unit,
+    onBackToDaySummary: () -> Unit,
     onAddTransaction: () -> Unit,
     onEditTransaction: (Long) -> Unit,
 ) {
     Scaffold(
+        // MainScaffold's outer Scaffold already applies the safe-drawing insets as content
+        // padding; without this, this nested Scaffold would apply them a second time and
+        // push the month header down by an extra status-bar height.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         floatingActionButton = {
             FloatingActionButton(onClick = onAddTransaction) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.feature_home_impl_home_add_transaction_desc))
@@ -81,26 +92,63 @@ internal fun HomeScreen(
                 balanceToman = uiState.summary.balanceToman,
             )
             FilterRow(selected = uiState.filter, onFilterChange = onFilterChange)
-            if (uiState.transactions.isEmpty()) {
-                EmptyState()
+            val selectedDay = uiState.selectedDay
+            if (selectedDay == null) {
+                if (uiState.daySummaries.isEmpty()) {
+                    EmptyState()
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding =
+                            androidx.compose.foundation.layout
+                                .PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(items = uiState.daySummaries, key = { it.day }) { daySummary ->
+                            DaySummaryRow(
+                                daySummary = daySummary,
+                                monthKey = uiState.monthKey,
+                                onClick = { onSelectDay(daySummary.day) },
+                            )
+                        }
+                    }
+                }
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding =
-                        androidx.compose.foundation.layout
-                            .PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(items = uiState.transactions, key = { it.id }) { transaction ->
-                        TransactionRow(
-                            transaction = transaction,
-                            onClick = { onEditTransaction(transaction.id) },
-                        )
+                val dayTransactions = uiState.transactions.filter { it.date.day == selectedDay }
+                DaySelectionHeader(
+                    title = dayTitle(selectedDay, uiState.monthKey),
+                    onBack = onBackToDaySummary,
+                )
+                if (dayTransactions.isEmpty()) {
+                    EmptyState(message = stringResource(R.string.feature_home_impl_home_day_empty_state))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding =
+                            androidx.compose.foundation.layout
+                                .PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(items = dayTransactions, key = { it.id }) { transaction ->
+                            TransactionRow(
+                                transaction = transaction,
+                                onClick = { onEditTransaction(transaction.id) },
+                            )
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private fun dayTitle(
+    day: Int,
+    monthKey: MonthKey,
+): String {
+    val dayText = PersianNumber.toPersianDigits(day.toLong())
+    val monthName = ShamsiCalendar.monthName(monthKey.month)
+    return "$dayText $monthName"
 }
 
 @Composable
@@ -178,7 +226,7 @@ private fun SummaryItem(
             modifier = Modifier.fillMaxWidth(),
         )
         Text(
-            text = PersianNumber.toman(amount),
+            text = ltrAmount(PersianNumber.toman(amount)),
             style = MaterialTheme.typography.titleSmall,
             color = color,
             textAlign = TextAlign.Center,
@@ -186,6 +234,13 @@ private fun SummaryItem(
         )
     }
 }
+
+/**
+ * Prefixes a formatted amount with a left-to-right mark so the bidi algorithm keeps a negative
+ * sign attached to its digits (e.g. "-۱٬۰۰۰") instead of moving it to the visual end of the
+ * string inside our RTL layout direction.
+ */
+private fun ltrAmount(text: String): String = "\u200E$text"
 
 @Composable
 private fun FilterRow(
@@ -209,6 +264,53 @@ private fun FilterRow(
             { onFilterChange(HomeFilter.EXPENSE) },
             { Text(stringResource(R.string.feature_home_impl_home_filter_expense)) },
         )
+    }
+}
+
+@Composable
+private fun DaySelectionHeader(
+    title: String,
+    onBack: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = stringResource(R.string.feature_home_impl_home_back_to_days_desc),
+            )
+        }
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+@Composable
+private fun DaySummaryRow(
+    daySummary: DaySummary,
+    monthKey: MonthKey,
+    onClick: () -> Unit,
+) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = dayTitle(daySummary.day, monthKey),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = ltrAmount(PersianNumber.toman(daySummary.netToman)),
+                style = MaterialTheme.typography.titleSmall,
+                color = if (daySummary.netToman < 0) ExpenseRed else IncomeGreen,
+                maxLines = 1,
+                softWrap = false,
+                modifier = Modifier.padding(start = 8.dp),
+            )
+        }
     }
 }
 
@@ -243,14 +345,14 @@ private fun TransactionRow(
 }
 
 @Composable
-private fun EmptyState() {
+private fun EmptyState(message: String = stringResource(R.string.feature_home_impl_home_empty_state)) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(R.string.feature_home_impl_home_empty_state),
+            text = message,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )

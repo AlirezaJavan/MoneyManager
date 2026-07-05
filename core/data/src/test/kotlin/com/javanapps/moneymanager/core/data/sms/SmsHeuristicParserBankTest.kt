@@ -9,25 +9,48 @@ import org.junit.Test
 @Suppress("NonAsciiCharacters")
 class SmsHeuristicParserBankTest {
     private lateinit var parser: SmsHeuristicParser
-    private val noRules = emptyList<BankSmsRule>()
 
     @Before
     fun setUp() {
         parser = SmsHeuristicParser()
     }
 
+    private fun ruleFor(
+        sender: String,
+        bankName: String,
+        incomeKeywords: List<String> = emptyList(),
+        expenseKeywords: List<String> = emptyList(),
+    ) = BankSmsRule(
+        id = 1L,
+        senderPattern = sender,
+        bankName = bankName,
+        incomeKeywords = incomeKeywords,
+        expenseKeywords = expenseKeywords,
+        amountInRial = true,
+        defaultCategory = "متفرقه",
+        sampleBody = "",
+    )
+
+    // Unrelated senders must never be parsed, even if the body looks financial.
+    @Test
+    fun `unknown sender is ignored even with a bank-like body`() {
+        val body = "واریز 5,000,000 ریال به حساب شما"
+        assertThat(parser.parse(body, "SomeRandomApp", emptyList())).isNull()
+    }
+
     @Test
     fun `Bank Sina - Income`() {
         val body =
             """
-            ----------------------------------- 
+            -----------------------------------
             *بانک سينا*
             واريز به ‪187-12-5304730-1‬
             مبلغ  71,000,000 ريال
             مانده 118,407,422 ريال
             زمان : 1405/4/7 ; 10:34:04
             """.trimIndent()
-        val result = parser.parse(body, "BankSina", noRules)
+        val rule = ruleFor("BankSina", "بانک سینا", incomeKeywords = listOf("واريز"))
+        val result = parser.parse(body, "BankSina", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(7_100_000L)
         assertThat(result.type).isEqualTo(TransactionType.INCOME)
@@ -37,14 +60,15 @@ class SmsHeuristicParserBankTest {
     fun `Bank Sina - Expense`() {
         val body =
             """
-            ----------------------------------- 
+            -----------------------------------
             *بانک سينا*
             برداشت از ‪187-12-5304730-1‬
             مبلغ  500,000 ريال
             مانده 46,673,222 ريال
             زمان : 1405/4/8 ; 12:06:14
             """.trimIndent()
-        val result = parser.parse(body, "BankSina", noRules)
+        val rule = ruleFor("BankSina", "بانک سینا", expenseKeywords = listOf("برداشت"))
+        val result = parser.parse(body, "BankSina", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(50_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
@@ -54,7 +78,7 @@ class SmsHeuristicParserBankTest {
     fun `Bank Melli - Transfer`() {
         val body =
             """
-            ----------------------------------- 
+            -----------------------------------
             بانك ملي ايران
             كارت: 0465
             انتقال: 7,009,000
@@ -62,7 +86,8 @@ class SmsHeuristicParserBankTest {
             تاريخ: 1405/04/06
             ساعت: 22:22:04
             """.trimIndent()
-        val result = parser.parse(body, "BankMelli", noRules)
+        val rule = ruleFor("BankMelli", "بانک ملی", expenseKeywords = listOf("انتقال:"))
+        val result = parser.parse(body, "BankMelli", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(700_900L) // Assuming Rial if not specified
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
@@ -72,7 +97,7 @@ class SmsHeuristicParserBankTest {
     fun `Bank Melli - Purchase`() {
         val body =
             """
-            ----------------------------------- 
+            -----------------------------------
             بانك ملي ايران
             كارت: 0465
             خريد: 2,330,000
@@ -80,7 +105,8 @@ class SmsHeuristicParserBankTest {
             تاريخ: 1405/04/04
             ساعت: 17:14:22
             """.trimIndent()
-        val result = parser.parse(body, "BankMelli", noRules)
+        val rule = ruleFor("BankMelli", "بانک ملی", expenseKeywords = listOf("خريد"))
+        val result = parser.parse(body, "BankMelli", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(233_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
@@ -95,7 +121,8 @@ class SmsHeuristicParserBankTest {
             مانده:2,603,392,600
             0407-10:33
             """.trimIndent()
-        val result = parser.parse(body, "BankSaman", noRules)
+        val rule = ruleFor("BankSaman", "بانک سامان", expenseKeywords = listOf("برداشت"))
+        val result = parser.parse(body, "BankSaman", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(7_100_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
@@ -110,7 +137,8 @@ class SmsHeuristicParserBankTest {
             مانده:8,001,495,000
             0325-07:48
             """.trimIndent()
-        val result = parser.parse(body, "BankSaman", noRules)
+        val rule = ruleFor("BankSaman", "بانک سامان", incomeKeywords = listOf("واريز"))
+        val result = parser.parse(body, "BankSaman", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(800_000_000L)
         assertThat(result.type).isEqualTo(TransactionType.INCOME)
@@ -126,7 +154,8 @@ class SmsHeuristicParserBankTest {
             مانده:13,126,187
             4/8-10:53
             """.trimIndent()
-        val result = parser.parse(body, "BankSepah", noRules)
+        val rule = ruleFor("BankSepah", "بانک سپه", expenseKeywords = listOf("خريد"))
+        val result = parser.parse(body, "BankSepah", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(90_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
@@ -145,22 +174,26 @@ class SmsHeuristicParserBankTest {
             تاريخ:1405/04/07
             ساعت:16:21
             """.trimIndent()
-        val result = parser.parse(body, "BankTejarat", noRules)
+        val rule = ruleFor("BankTejarat", "بانک تجارت", expenseKeywords = listOf("پرداخت"))
+        val result = parser.parse(body, "BankTejarat", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(100_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
     }
 
     @Test
-    fun `Problematic Generic SMS`() {
+    fun `Generic SMS from a defined sender falls back to sign detection`() {
         val body =
             """
             1709.116.17132644.1
-            -10,780,000 
+            -10,780,000
             02/15_07:33
             مانده: 9,795,629
             """.trimIndent()
-        val result = parser.parse(body, "982000", noRules)
+        // No income/expense keyword in the body; sender is still recognized via a defined rule,
+        // so the sign of the amount determines the transaction type.
+        val rule = ruleFor("982000", "982000")
+        val result = parser.parse(body, "982000", listOf(rule))
         assertThat(result).isNotNull()
         assertThat(result!!.amountToman).isEqualTo(1_078_000L)
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)

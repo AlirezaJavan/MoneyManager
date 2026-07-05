@@ -77,4 +77,98 @@ class HomeViewModelTest {
                 assertThat(awaitItem().filter).isEqualTo(HomeFilter.EXPENSE)
             }
         }
+
+    @Test
+    fun uiState_groupsTransactionsIntoDaySummaries() =
+        runTest {
+            val month = viewModel.uiState.value.monthKey
+            val transactions =
+                listOf(
+                    Transaction(
+                        id = 1,
+                        amountToman = 1000,
+                        type = TransactionType.INCOME,
+                        categoryName = "Salary",
+                        title = "Salary",
+                        note = "",
+                        date = ShamsiDate(month.year, month.month, 1),
+                        createdAtEpochMillis = 0,
+                        source = TransactionSource.MANUAL,
+                    ),
+                    Transaction(
+                        id = 2,
+                        amountToman = 400,
+                        type = TransactionType.EXPENSE,
+                        categoryName = "Food",
+                        title = "Lunch",
+                        note = "",
+                        date = ShamsiDate(month.year, month.month, 1),
+                        createdAtEpochMillis = 0,
+                        source = TransactionSource.MANUAL,
+                    ),
+                )
+
+            viewModel.uiState.test {
+                var state = awaitItem()
+                repository.setTransactions(transactions)
+                while (state.isLoading || state.daySummaries.isEmpty()) {
+                    state = awaitItem()
+                }
+
+                assertThat(state.daySummaries).hasSize(1)
+                val daySummary = state.daySummaries.first()
+                assertThat(daySummary.day).isEqualTo(1)
+                assertThat(daySummary.netToman).isEqualTo(600)
+            }
+        }
+
+    @Test
+    fun selectDay_showsOnlyThatDaysTransactions() =
+        runTest {
+            val month = viewModel.uiState.value.monthKey
+            val transactions =
+                listOf(
+                    Transaction(
+                        id = 1,
+                        amountToman = 1000,
+                        type = TransactionType.EXPENSE,
+                        categoryName = "Food",
+                        title = "Day1",
+                        note = "",
+                        date = ShamsiDate(month.year, month.month, 1),
+                        createdAtEpochMillis = 0,
+                        source = TransactionSource.MANUAL,
+                    ),
+                    Transaction(
+                        id = 2,
+                        amountToman = 2000,
+                        type = TransactionType.EXPENSE,
+                        categoryName = "Food",
+                        title = "Day2",
+                        note = "",
+                        date = ShamsiDate(month.year, month.month, 2),
+                        createdAtEpochMillis = 0,
+                        source = TransactionSource.MANUAL,
+                    ),
+                )
+
+            viewModel.uiState.test {
+                var state = awaitItem()
+                repository.setTransactions(transactions)
+                while (state.isLoading || state.transactions.isEmpty()) {
+                    state = awaitItem()
+                }
+
+                viewModel.onSelectDay(1)
+                state = awaitItem()
+                assertThat(state.selectedDay).isEqualTo(1)
+                assertThat(state.transactions.filter { it.date.day == 1 }).hasSize(1)
+
+                viewModel.onNextMonth()
+                while (state.selectedDay != null) {
+                    state = awaitItem()
+                }
+                assertThat(state.selectedDay as Int?).isNull()
+            }
+        }
 }

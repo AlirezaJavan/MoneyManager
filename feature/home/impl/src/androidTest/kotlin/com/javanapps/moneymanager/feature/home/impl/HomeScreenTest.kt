@@ -4,12 +4,12 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import com.javanapps.moneymanager.core.model.MonthKey
 import com.javanapps.moneymanager.core.model.MonthlySummary
-import com.javanapps.moneymanager.core.model.ShamsiDate
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
+import io.github.alirezajavan.shamsipicker.model.MonthKey
+import io.github.alirezajavan.shamsipicker.model.ShamsiDate
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,6 +23,8 @@ class HomeScreenTest {
             monthKey = testMonth,
             monthTitle = "فروردین ۱۴۰۳",
             transactions = emptyList(),
+            daySummaries = emptyList(),
+            selectedDay = null,
             summary = MonthlySummary(0L, 0L),
             filter = HomeFilter.ALL,
             isLoading = false,
@@ -36,6 +38,8 @@ class HomeScreenTest {
                 onNextMonth = {},
                 onPreviousMonth = {},
                 onFilterChange = {},
+                onSelectDay = {},
+                onBackToDaySummary = {},
                 onAddTransaction = {},
                 onEditTransaction = {},
             )
@@ -45,7 +49,7 @@ class HomeScreenTest {
     }
 
     @Test
-    fun withTransactions_showsTransactionList() {
+    fun withTransactions_showsDaySummaryList() {
         val tx =
             Transaction(
                 id = 1L,
@@ -61,6 +65,7 @@ class HomeScreenTest {
         val state =
             emptyState.copy(
                 transactions = listOf(tx),
+                daySummaries = listOf(DaySummary(day = 10, incomeToman = 0L, expenseToman = 5000L)),
                 summary = MonthlySummary(incomeToman = 0L, expenseToman = 5000L),
                 isLoading = false,
             )
@@ -71,6 +76,46 @@ class HomeScreenTest {
                 onNextMonth = {},
                 onPreviousMonth = {},
                 onFilterChange = {},
+                onSelectDay = {},
+                onBackToDaySummary = {},
+                onAddTransaction = {},
+                onEditTransaction = {},
+            )
+        }
+
+        composeTestRule.onNodeWithText("۱۰ فروردین").assertIsDisplayed()
+    }
+
+    @Test
+    fun selectingDay_showsThatDaysTransactions() {
+        val tx =
+            Transaction(
+                id = 1L,
+                amountToman = 5000L,
+                type = TransactionType.EXPENSE,
+                categoryName = "خوراک",
+                title = "ناهار",
+                note = "",
+                date = ShamsiDate(1403, 1, 10),
+                createdAtEpochMillis = 0L,
+                source = TransactionSource.MANUAL,
+            )
+        val state =
+            emptyState.copy(
+                transactions = listOf(tx),
+                selectedDay = 10,
+                summary = MonthlySummary(incomeToman = 0L, expenseToman = 5000L),
+                isLoading = false,
+            )
+
+        composeTestRule.setContent {
+            HomeScreen(
+                uiState = state,
+                onNextMonth = {},
+                onPreviousMonth = {},
+                onFilterChange = {},
+                onSelectDay = {},
+                onBackToDaySummary = {},
                 onAddTransaction = {},
                 onEditTransaction = {},
             )
@@ -87,6 +132,8 @@ class HomeScreenTest {
                 onNextMonth = {},
                 onPreviousMonth = {},
                 onFilterChange = {},
+                onSelectDay = {},
+                onBackToDaySummary = {},
                 onAddTransaction = {},
                 onEditTransaction = {},
             )

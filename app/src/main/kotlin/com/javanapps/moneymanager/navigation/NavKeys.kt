@@ -21,6 +21,10 @@ data object SmsNavKey : NavKey
 @Serializable
 data class AddEditTransactionNavKey(
     val transactionId: Long? = null,
+    // Distinguishes separate "add new" pushes (which all have transactionId == null) so each
+    // gets its own back stack entry / ViewModel instead of colliding on data class equality and
+    // reusing stale form state from a previous add session.
+    val sessionId: Long = System.nanoTime(),
 ) : NavKey
 
 @Serializable

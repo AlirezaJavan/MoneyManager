@@ -10,4 +10,6 @@
     <string name="feature_home_impl_home_prev_month_desc">ماه قبل</string>
     <string name="feature_home_impl_home_next_month_desc">ماه بعد</string>
     <string name="feature_home_impl_home_add_transaction_desc">افزودن تراکنش</string>
+    <string name="feature_home_impl_home_back_to_days_desc">بازگشت به لیست روزها</string>
+    <string name="feature_home_impl_home_day_empty_state">تراکنشی در این روز ثبت نشده است</string>
 </resources>

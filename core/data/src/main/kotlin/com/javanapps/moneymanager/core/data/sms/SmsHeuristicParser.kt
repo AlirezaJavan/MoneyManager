@@ -7,11 +7,8 @@ import com.javanapps.moneymanager.core.model.TransactionType
 import javax.inject.Inject
 
 /**
- * Generic, data-driven SMS parser. No hardcoded bank senders.
- *
- * Priority:
- * 1. Match against a [BankSmsRule] by sender (exact or contains).
- * 2. Fall back to generic heuristic analysis.
+ * Data-driven SMS parser. Only messages from senders matching a defined or user-taught
+ * [BankSmsRule] are parsed as bank transactions — every other sender is ignored.
  *
  * OTP / ad detection runs before monetary parsing and returns null for non-financial messages.
  */
@@ -25,7 +22,7 @@ class SmsHeuristicParser
         ): ParsedSms? {
             if (isOtpOrAd(body)) return null
 
-            // Rule-based parse (user-taught / seeded rules)
+            // Only senders matching a user-defined/learned rule are considered.
             for (rule in rules.filter { it.enabled }) {
                 if (senderMatches(sender, rule.senderPattern)) {
                     val result = parseWithRule(body, sender, rule) ?: continue
@@ -33,8 +30,7 @@ class SmsHeuristicParser
                 }
             }
 
-            // Generic heuristic
-            return parseHeuristic(body, sender)
+            return null
         }
 
         private fun parseWithRule(
@@ -42,8 +38,11 @@ class SmsHeuristicParser
             sender: String,
             rule: BankSmsRule,
         ): ParsedSms? {
-            val amount = extractAmount(body, rule.amountInRial) ?: return null
-            val type = detectTypeByKeywords(body, rule.incomeKeywords, rule.expenseKeywords) ?: return null
+            val (amount, matchValue) = extractAmountAndMatch(body, rule.amountInRial) ?: return null
+            val type =
+                detectTypeByKeywords(body, rule.incomeKeywords, rule.expenseKeywords)
+                    ?: detectTypeBySign(matchValue)
+                    ?: return null
             return ParsedSms(
                 amountToman = amount,
                 type = type,
@@ -52,24 +51,6 @@ class SmsHeuristicParser
                 rawBody = body,
                 sender = sender,
                 ruleId = rule.id,
-            )
-        }
-
-        private fun parseHeuristic(
-            body: String,
-            sender: String,
-        ): ParsedSms? {
-            val (amount, matchValue) = extractAmountAndMatch(body, amountInRial = null) ?: return null
-            val type = detectTypeHeuristic(body, matchValue) ?: return null
-            val confidence = computeHeuristicConfidence(body, amount)
-            return ParsedSms(
-                amountToman = amount,
-                type = type,
-                bankName = senderDisplayName(sender),
-                confidence = confidence,
-                rawBody = body,
-                sender = sender,
-                ruleId = null,
             )
         }
 
@@ -103,11 +84,6 @@ class SmsHeuristicParser
             Regex(
                 "[+\\-−±]?[۰-۹0-9٠-٩][۰-۹0-9٠-٩,،٬\\u200c]{0,20}[۰-۹0-9٠-٩]",
             )
-
-        private fun extractAmount(
-            body: String,
-            amountInRial: Boolean?,
-        ): Long? = extractAmountAndMatch(body, amountInRial)?.first
 
         private fun extractAmountAndMatch(
             body: String,
@@ -223,28 +199,10 @@ class SmsHeuristicParser
             return null
         }
 
-        private fun detectTypeHeuristic(
-            body: String,
-            matchValue: String,
-        ): TransactionType? {
+        private fun detectTypeBySign(matchValue: String): TransactionType? {
             if (matchValue.startsWith('+')) return TransactionType.INCOME
             if (matchValue.startsWith('-') || matchValue.startsWith('−')) return TransactionType.EXPENSE
-
-            return detectTypeByKeywords(body, defaultIncomeKeywords, defaultExpenseKeywords)
-        }
-
-        // ─── Confidence ──────────────────────────────────────────────────────────
-
-        private fun computeHeuristicConfidence(
-            body: String,
-            amount: Long,
-        ): Int {
-            var score = SCORE_BASE
-            if (amount > 0) score += SCORE_AMOUNT_PRESENT
-            if (defaultIncomeKeywords.any { it in body } || defaultExpenseKeywords.any { it in body }) score += SCORE_TYPE_KEYWORD
-            if (body.contains("موجودی") || body.contains("حساب") || body.contains("کارت")) score += SCORE_ACCOUNT_KEYWORD
-            if (body.contains("ریال") || body.contains("تومان")) score += SCORE_CURRENCY_KEYWORD
-            return score.coerceAtMost(100)
+            return null
         }
 
         // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -253,8 +211,6 @@ class SmsHeuristicParser
             sender: String,
             pattern: String,
         ): Boolean = sender.equals(pattern, ignoreCase = true) || sender.contains(pattern, ignoreCase = true)
-
-        private fun senderDisplayName(sender: String): String = if (sender.all { it.isDigit() || it == '+' }) "پیامک $sender" else sender
 
         private fun toLatinDigits(text: String): String =
             buildString(text.length) {
@@ -271,11 +227,6 @@ class SmsHeuristicParser
 
         companion object {
             private const val CONFIDENCE_RULE_BASED = 90
-            private const val SCORE_BASE = 30
-            private const val SCORE_AMOUNT_PRESENT = 20
-            private const val SCORE_TYPE_KEYWORD = 25
-            private const val SCORE_ACCOUNT_KEYWORD = 15
-            private const val SCORE_CURRENCY_KEYWORD = 10
         }
 
         /**
