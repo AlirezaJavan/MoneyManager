@@ -17,5 +17,10 @@
     <string name="core_ui_permission_skip">نه ممنون، بعداً تنظیم می‌کنم</string>
 
     <string name="core_ui_category_picker_add">افزودن «%1$s»</string>
+    <string name="core_ui_category_picker_add_new">افزودن دسته جدید</string>
     <string name="core_ui_category_picker_edit_desc">ویرایش دسته</string>
+    <string name="core_ui_category_rename_title">ویرایش نام دسته</string>
+    <string name="core_ui_category_rename_label">نام دسته</string>
+    <string name="core_ui_category_rename_save">ذخیره</string>
+    <string name="core_ui_category_rename_cancel">انصراف</string>
 </resources>

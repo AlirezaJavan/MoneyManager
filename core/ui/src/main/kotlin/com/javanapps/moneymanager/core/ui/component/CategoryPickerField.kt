@@ -45,11 +45,15 @@ fun CategoryPickerField(
         remember(categories, query) {
             if (query.isBlank()) categories else categories.filter { it.name.contains(query, ignoreCase = true) }
         }
-    val hasExactMatch = categories.any { it.name.equals(query.trim(), ignoreCase = true) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = { open ->
+            expanded = open
+            // Opening: clear the field so the user can type from scratch and sees every category.
+            // Closing without picking anything: fall back to whatever was selected before.
+            query = if (open) "" else selectedName.orEmpty()
+        },
         modifier = modifier,
     ) {
         OutlinedTextField(
@@ -73,6 +77,24 @@ fun CategoryPickerField(
                 query = selectedName.orEmpty()
             },
         ) {
+            // Always first, in every state, so "add a category" is never buried in the list.
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        if (query.isBlank()) {
+                            stringResource(R.string.core_ui_category_picker_add_new)
+                        } else {
+                            stringResource(R.string.core_ui_category_picker_add, query.trim())
+                        },
+                    )
+                },
+                leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                enabled = query.isNotBlank(),
+                onClick = {
+                    onAddCategory(query.trim())
+                    expanded = false
+                },
+            )
             filtered.forEach { category ->
                 DropdownMenuItem(
                     text = { Text(category.name) },
@@ -92,16 +114,6 @@ fun CategoryPickerField(
                                 }
                             }
                         },
-                )
-            }
-            if (query.isNotBlank() && !hasExactMatch) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.core_ui_category_picker_add, query.trim())) },
-                    leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                    onClick = {
-                        onAddCategory(query.trim())
-                        expanded = false
-                    },
                 )
             }
         }

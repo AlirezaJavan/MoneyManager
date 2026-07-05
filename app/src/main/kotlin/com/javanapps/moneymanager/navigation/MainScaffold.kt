@@ -70,6 +70,8 @@ fun MainScaffold(
         PendingTransactionsScreen(
             transactions = pendingTransactions,
             categoryRepository = viewModel.categoryRepository,
+            addCategoryUseCase = viewModel.addCategoryUseCase,
+            renameCategoryUseCase = viewModel.renameCategoryUseCase,
             onConfirm = viewModel::confirmTransaction,
             onRemove = viewModel::removeTransaction,
         )

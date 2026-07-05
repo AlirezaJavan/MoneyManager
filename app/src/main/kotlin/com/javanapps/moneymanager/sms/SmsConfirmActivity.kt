@@ -47,11 +47,14 @@ import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
 import com.javanapps.moneymanager.core.designsystem.theme.MoneyManagerTheme
 import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
+import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.ParsedSms
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
 import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
+import com.javanapps.moneymanager.core.ui.component.CategoryRenameDialog
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.PersianNumber
@@ -65,6 +68,8 @@ class SmsConfirmActivity : ComponentActivity() {
     @Inject lateinit var categoryRepository: CategoryRepository
 
     @Inject lateinit var addCategoryUseCase: AddCategoryUseCase
+
+    @Inject lateinit var renameCategoryUseCase: RenameCategoryUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +111,7 @@ class SmsConfirmActivity : ComponentActivity() {
                             parsed = parsed,
                             categoryRepository = categoryRepository,
                             addCategoryUseCase = addCategoryUseCase,
+                            renameCategoryUseCase = renameCategoryUseCase,
                             onSave = { tx ->
                                 lifecycleScope.launch {
                                     // Update the existing pending transaction and mark as confirmed
@@ -182,6 +188,7 @@ private fun SmsConfirmScreen(
     parsed: ParsedSms,
     categoryRepository: CategoryRepository,
     addCategoryUseCase: AddCategoryUseCase,
+    renameCategoryUseCase: RenameCategoryUseCase,
     onSave: (Transaction) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -193,6 +200,7 @@ private fun SmsConfirmScreen(
         mutableStateOf(DefaultCategories.MISC)
     }
     var note by remember { mutableStateOf("") }
+    var renameTarget by remember { mutableStateOf<Category?>(null) }
 
     Card(
         modifier =
@@ -235,6 +243,7 @@ private fun SmsConfirmScreen(
                         selectedCategory = name
                     }
                 },
+                onEditCategory = { renameTarget = it },
                 label = stringResource(R.string.sms_confirm_category_label),
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -275,5 +284,18 @@ private fun SmsConfirmScreen(
                 }
             }
         }
+    }
+
+    renameTarget?.let { target ->
+        CategoryRenameDialog(
+            category = target,
+            onConfirm = { newName ->
+                coroutineScope.launch {
+                    renameCategoryUseCase(target.id, newName)
+                    if (selectedCategory == target.name) selectedCategory = newName
+                }
+            },
+            onDismiss = { renameTarget = null },
+        )
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -22,7 +21,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.TransactionType
 import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
+import com.javanapps.moneymanager.core.ui.component.CategoryRenameDialog
 import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
 import io.github.alirezajavan.shamsipicker.model.ShamsiDate
@@ -275,33 +274,10 @@ internal fun AddEditTransactionScreen(
     }
 
     renameTarget?.let { target ->
-        var name by remember(target) { mutableStateOf(target.name) }
-        AlertDialog(
-            onDismissRequest = { renameTarget = null },
-            title = { Text(stringResource(R.string.feature_transaction_impl_transaction_rename_category_title)) },
-            text = {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.feature_transaction_impl_transaction_rename_category_label)) },
-                    singleLine = true,
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        if (name.isNotBlank()) onRenameCategory(target, name.trim())
-                        renameTarget = null
-                    },
-                ) {
-                    Text(stringResource(R.string.feature_transaction_impl_transaction_action_save))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { renameTarget = null }) {
-                    Text(stringResource(R.string.feature_transaction_impl_transaction_action_cancel))
-                }
-            },
+        CategoryRenameDialog(
+            category = target,
+            onConfirm = { newName -> onRenameCategory(target, newName) },
+            onDismiss = { renameTarget = null },
         )
     }
 }

@@ -15,11 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,16 +41,24 @@ import com.javanapps.moneymanager.R
 import com.javanapps.moneymanager.core.data.repository.CategoryRepository
 import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
+import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
+import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionType
+import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
+import com.javanapps.moneymanager.core.ui.component.CategoryRenameDialog
 import io.github.alirezajavan.shamsipicker.format.PersianNumber
 import io.github.alirezajavan.shamsipicker.format.ShamsiDateFormatter
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PendingTransactionsScreen(
     transactions: List<Transaction>,
     categoryRepository: CategoryRepository,
+    addCategoryUseCase: AddCategoryUseCase,
+    renameCategoryUseCase: RenameCategoryUseCase,
     onConfirm: (Transaction) -> Unit,
     onRemove: (Long) -> Unit,
 ) {
@@ -93,6 +98,8 @@ fun PendingTransactionsScreen(
                 PendingTransactionCard(
                     transaction = tx,
                     categoryRepository = categoryRepository,
+                    addCategoryUseCase = addCategoryUseCase,
+                    renameCategoryUseCase = renameCategoryUseCase,
                     onSave = { updated ->
                         onConfirm(updated)
                         cancelNotification(context, tx.id)
@@ -112,15 +119,18 @@ fun PendingTransactionsScreen(
 private fun PendingTransactionCard(
     transaction: Transaction,
     categoryRepository: CategoryRepository,
+    addCategoryUseCase: AddCategoryUseCase,
+    renameCategoryUseCase: RenameCategoryUseCase,
     onSave: (Transaction) -> Unit,
     onDelete: () -> Unit,
 ) {
-    val categories by categoryRepository.observeAll().collectAsState(initial = emptyList())
+    val categories by categoryRepository.observeByType(transaction.type).collectAsState(initial = emptyList())
     val typeColor = if (transaction.type == TransactionType.INCOME) IncomeGreen else ExpenseRed
+    val coroutineScope = rememberCoroutineScope()
 
     var selectedCategory by remember { mutableStateOf(transaction.categoryName) }
     var note by remember { mutableStateOf(transaction.note) }
-    var expanded by remember { mutableStateOf(false) }
+    var renameTarget by remember { mutableStateOf<Category?>(null) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -161,30 +171,20 @@ private fun PendingTransactionCard(
                 color = typeColor,
             )
 
-            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
-                OutlinedTextField(
-                    value = selectedCategory,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.sms_confirm_category_label)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                )
-                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    categories.filter { it.type == transaction.type }.forEach { cat ->
-                        DropdownMenuItem(
-                            text = { Text(cat.name) },
-                            onClick = {
-                                selectedCategory = cat.name
-                                expanded = false
-                            },
-                        )
+            CategoryPickerField(
+                categories = categories,
+                selectedName = selectedCategory,
+                onSelect = { selectedCategory = it },
+                onAddCategory = { name ->
+                    coroutineScope.launch {
+                        addCategoryUseCase(name, transaction.type)
+                        selectedCategory = name
                     }
-                }
-            }
+                },
+                onEditCategory = { renameTarget = it },
+                label = stringResource(R.string.sms_confirm_category_label),
+                modifier = Modifier.fillMaxWidth(),
+            )
 
             OutlinedTextField(
                 value = note,
@@ -203,6 +203,19 @@ private fun PendingTransactionCard(
                 Text(stringResource(R.string.sms_confirm_save))
             }
         }
+    }
+
+    renameTarget?.let { target ->
+        CategoryRenameDialog(
+            category = target,
+            onConfirm = { newName ->
+                coroutineScope.launch {
+                    renameCategoryUseCase(target.id, newName)
+                    if (selectedCategory == target.name) selectedCategory = newName
+                }
+            },
+            onDismiss = { renameTarget = null },
+        )
     }
 }
 

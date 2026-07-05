@@ -73,12 +73,15 @@ import com.javanapps.moneymanager.core.designsystem.theme.ExpenseRed
 import com.javanapps.moneymanager.core.designsystem.theme.IncomeGreen
 import com.javanapps.moneymanager.core.designsystem.theme.MoneyManagerTheme
 import com.javanapps.moneymanager.core.domain.category.AddCategoryUseCase
+import com.javanapps.moneymanager.core.domain.category.RenameCategoryUseCase
+import com.javanapps.moneymanager.core.model.Category
 import com.javanapps.moneymanager.core.model.DarkThemeConfig
 import com.javanapps.moneymanager.core.model.ParsedSms
 import com.javanapps.moneymanager.core.model.Transaction
 import com.javanapps.moneymanager.core.model.TransactionSource
 import com.javanapps.moneymanager.core.model.TransactionType
 import com.javanapps.moneymanager.core.ui.component.CategoryPickerField
+import com.javanapps.moneymanager.core.ui.component.CategoryRenameDialog
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.alirezajavan.shamsipicker.calendar.ShamsiCalendar
 import io.github.alirezajavan.shamsipicker.format.PersianNumber
@@ -95,6 +98,7 @@ class SmsOverlayManager
         private val transactionRepository: TransactionRepository,
         private val categoryRepository: CategoryRepository,
         private val addCategoryUseCase: AddCategoryUseCase,
+        private val renameCategoryUseCase: RenameCategoryUseCase,
     ) {
         private val windowManager = context.getSystemService(WindowManager::class.java)
         private val mainHandler = Handler(Looper.getMainLooper())
@@ -148,6 +152,7 @@ class SmsOverlayManager
                                     parsed = parsed,
                                     categoryRepository = categoryRepository,
                                     addCategoryUseCase = addCategoryUseCase,
+                                    renameCategoryUseCase = renameCategoryUseCase,
                                     onSave = { tx ->
                                         scope.launch {
                                             transactionRepository.update(tx.copy(id = transactionId, isPending = false))
@@ -233,6 +238,7 @@ private fun SmsTransactionOverlay(
     parsed: ParsedSms,
     categoryRepository: CategoryRepository,
     addCategoryUseCase: AddCategoryUseCase,
+    renameCategoryUseCase: RenameCategoryUseCase,
     onSave: (Transaction) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -243,6 +249,7 @@ private fun SmsTransactionOverlay(
 
     var selectedCategory by remember { mutableStateOf(DefaultCategories.MISC) }
     var note by remember { mutableStateOf("") }
+    var renameTarget by remember { mutableStateOf<Category?>(null) }
 
     Box(
         modifier =
@@ -324,6 +331,7 @@ private fun SmsTransactionOverlay(
                             selectedCategory = name
                         }
                     },
+                    onEditCategory = { renameTarget = it },
                     label = stringResource(R.string.sms_confirm_category_label),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -366,5 +374,18 @@ private fun SmsTransactionOverlay(
                 }
             }
         }
+    }
+
+    renameTarget?.let { target ->
+        CategoryRenameDialog(
+            category = target,
+            onConfirm = { newName ->
+                coroutineScope.launch {
+                    renameCategoryUseCase(target.id, newName)
+                    if (selectedCategory == target.name) selectedCategory = newName
+                }
+            },
+            onDismiss = { renameTarget = null },
+        )
     }
 }
