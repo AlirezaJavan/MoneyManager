@@ -28,6 +28,7 @@ class SettingsViewModel
                 SettingsUiState(
                     biometricEnabled = data.biometricEnabled,
                     smsServiceEnabled = data.smsServiceEnabled,
+                    smsOverlayEnabled = data.smsOverlayEnabled,
                     darkThemeConfig = data.darkThemeConfig,
                     message = msg,
                 )
@@ -39,6 +40,10 @@ class SettingsViewModel
 
         fun setSmsServiceEnabled(enabled: Boolean) {
             viewModelScope.launch { preferencesRepository.setSmsServiceEnabled(enabled) }
+        }
+
+        fun setSmsOverlayEnabled(enabled: Boolean) {
+            viewModelScope.launch { preferencesRepository.setSmsOverlayEnabled(enabled) }
         }
 
         fun setDarkThemeConfig(config: DarkThemeConfig) {

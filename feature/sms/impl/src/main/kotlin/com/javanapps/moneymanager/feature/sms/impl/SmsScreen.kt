@@ -18,6 +18,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -168,6 +170,12 @@ private fun TeachRuleCard(
                 label = { Text(stringResource(R.string.feature_sms_impl_sms_teach_sender_hint)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                // Sender ids are phone numbers/short codes with no strong-direction characters
+                // (only digits, "+", spaces, "-"); under the app's global RTL layout, the Unicode
+                // bidi algorithm has no strong anchor to pin their order and visually scrambles
+                // them (e.g. pasting "+1 650 555-6789" renders reversed). Force LTR so it always
+                // displays and edits in the order it was typed/pasted.
+                textStyle = LocalTextStyle.current.copy(textDirection = TextDirection.Ltr),
             )
             OutlinedTextField(
                 value = uiState.teachBankName,
@@ -235,7 +243,7 @@ private fun RulePreview(rule: BankSmsRule) {
             Text(stringResource(R.string.feature_sms_impl_sms_teach_rule_bank, rule.bankName), style = MaterialTheme.typography.bodySmall)
             Text(
                 stringResource(R.string.feature_sms_impl_sms_teach_rule_sender, rule.senderPattern.persianIfNumeric()),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.copy(textDirection = TextDirection.Ltr),
             )
             Text(
                 stringResource(R.string.feature_sms_impl_sms_teach_rule_income_keywords, rule.incomeKeywords.joinToString()),
@@ -278,7 +286,7 @@ private fun RuleRow(
             Text(rule.bankName.ifBlank { rule.senderPattern.persianIfNumeric() }, style = MaterialTheme.typography.bodyLarge)
             Text(
                 rule.senderPattern.persianIfNumeric(),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.copy(textDirection = TextDirection.Ltr),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

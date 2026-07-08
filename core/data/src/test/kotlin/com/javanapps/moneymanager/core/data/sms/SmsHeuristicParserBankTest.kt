@@ -181,6 +181,42 @@ class SmsHeuristicParserBankTest {
         assertThat(result.type).isEqualTo(TransactionType.EXPENSE)
     }
 
+    // Regression test for a rule taught from a copy-pasted phone number such as
+    // "+1 650 555-6789": the sender address delivered by Telephony rarely keeps the same
+    // spacing/dash formatting the user pasted into the rule (e.g. it arrives as
+    // "+16505556789"), so a naive equals/contains match on the raw strings silently fails
+    // to detect the SMS even though the number is otherwise identical.
+    @Test
+    fun `sender pattern with spaces and dashes still matches an unformatted incoming sender`() {
+        val body = "واریز 5,000,000 ریال به حساب شما"
+        val rule = ruleFor("+1 650 555-6789", "بانک آمریکایی", incomeKeywords = listOf("واریز"))
+
+        val result = parser.parse(body, "+16505556789", listOf(rule))
+
+        assertThat(result).isNotNull()
+        assertThat(result!!.type).isEqualTo(TransactionType.INCOME)
+    }
+
+    @Test
+    fun `sender pattern taught with formatting also matches the exact same formatting`() {
+        val body = "واریز 5,000,000 ریال به حساب شما"
+        val rule = ruleFor("+1 650 555-6789", "بانک آمریکایی", incomeKeywords = listOf("واریز"))
+
+        val result = parser.parse(body, "+1 650 555-6789", listOf(rule))
+
+        assertThat(result).isNotNull()
+    }
+
+    @Test
+    fun `learnFromSample strips spacing and dashes from a pasted phone number sender`() {
+        val body = "واریز 5,000,000 ریال به حساب شما"
+
+        val rule = parser.learnFromSample(body, "+1 650 555-6789", "بانک آمریکایی")
+
+        assertThat(rule).isNotNull()
+        assertThat(rule!!.senderPattern).isEqualTo("+16505556789")
+    }
+
     @Test
     fun `Generic SMS from a defined sender falls back to sign detection`() {
         val body =

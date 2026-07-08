@@ -210,7 +210,19 @@ class SmsHeuristicParser
         private fun senderMatches(
             sender: String,
             pattern: String,
-        ): Boolean = sender.equals(pattern, ignoreCase = true) || sender.contains(pattern, ignoreCase = true)
+        ): Boolean {
+            val normalizedSender = normalizeSenderId(sender)
+            val normalizedPattern = normalizeSenderId(pattern)
+            return normalizedSender.equals(normalizedPattern, ignoreCase = true) ||
+                normalizedSender.contains(normalizedPattern, ignoreCase = true)
+        }
+
+        /**
+         * Strips punctuation commonly introduced when a phone number is copy-pasted from a contacts
+         * app or dialer (spaces, hyphens, parentheses) so a rule taught from "+1 650 555-6789" still
+         * matches an incoming SMS whose sender address arrives as "+16505556789".
+         */
+        private fun normalizeSenderId(value: String): String = value.filterNot { it == ' ' || it == '-' || it == '(' || it == ')' }
 
         private fun toLatinDigits(text: String): String =
             buildString(text.length) {
@@ -258,7 +270,7 @@ class SmsHeuristicParser
 
             return BankSmsRule(
                 id = BankSmsRule.NO_ID,
-                senderPattern = sender,
+                senderPattern = normalizeSenderId(sender),
                 bankName = bankName,
                 incomeKeywords = incomeKws.ifEmpty { defaultIncomeKeywords },
                 expenseKeywords = expenseKws.ifEmpty { defaultExpenseKeywords },

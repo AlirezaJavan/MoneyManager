@@ -16,6 +16,7 @@ class SettingsScreenTest {
         SettingsUiState(
             biometricEnabled = false,
             smsServiceEnabled = true,
+            smsOverlayEnabled = true,
             darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
         )
 
@@ -26,6 +27,7 @@ class SettingsScreenTest {
                 uiState = defaultState,
                 onBiometricChange = {},
                 onSmsServiceChange = {},
+                onSmsOverlayChange = {},
                 onThemeChange = {},
                 onChangePassword = { _, _ -> },
                 onMessageShown = {},
@@ -37,6 +39,7 @@ class SettingsScreenTest {
         composeTestRule.onNodeWithText("تنظیمات").assertIsDisplayed()
         composeTestRule.onNodeWithText("ورود با اثر انگشت").assertIsDisplayed()
         composeTestRule.onNodeWithText("تشخیص خودکار پیامک‌های بانکی").assertIsDisplayed()
+        composeTestRule.onNodeWithText("نمایش پنجره تایید روی صفحه").assertIsDisplayed()
         composeTestRule.onNodeWithText("پوسته برنامه").assertIsDisplayed()
     }
 
@@ -47,6 +50,7 @@ class SettingsScreenTest {
                 uiState = defaultState,
                 onBiometricChange = {},
                 onSmsServiceChange = {},
+                onSmsOverlayChange = {},
                 onThemeChange = {},
                 onChangePassword = { _, _ -> },
                 onMessageShown = {},
@@ -67,6 +71,7 @@ class SettingsScreenTest {
                 uiState = defaultState.copy(message = SettingsMessage.PasswordChanged),
                 onBiometricChange = {},
                 onSmsServiceChange = {},
+                onSmsOverlayChange = {},
                 onThemeChange = {},
                 onChangePassword = { _, _ -> },
                 onMessageShown = {},

@@ -14,6 +14,7 @@ class TestPreferencesRepository : PreferencesRepository {
             isAppActive = true,
             biometricEnabled = false,
             smsServiceEnabled = true,
+            smsOverlayEnabled = true,
             darkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
         )
 
@@ -37,6 +38,10 @@ class TestPreferencesRepository : PreferencesRepository {
 
     override suspend fun setSmsServiceEnabled(enabled: Boolean) {
         state.value = state.value.copy(smsServiceEnabled = enabled)
+    }
+
+    override suspend fun setSmsOverlayEnabled(enabled: Boolean) {
+        state.value = state.value.copy(smsOverlayEnabled = enabled)
     }
 
     override suspend fun setDarkThemeConfig(config: DarkThemeConfig) {

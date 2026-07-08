@@ -149,6 +149,7 @@ class SmsConfirmActivity : ComponentActivity() {
         private const val EXTRA_BANK = "bank"
         private const val EXTRA_BODY = "body"
         private const val EXTRA_SENDER = "sender"
+        private const val EXTRA_TIMESTAMP = "timestamp"
         private const val CONFIDENCE_MANUAL_CONFIRM = 80
 
         fun createIntent(
@@ -163,6 +164,7 @@ class SmsConfirmActivity : ComponentActivity() {
                 putExtra(EXTRA_BANK, parsed.bankName)
                 putExtra(EXTRA_BODY, parsed.rawBody)
                 putExtra(EXTRA_SENDER, parsed.sender)
+                putExtra(EXTRA_TIMESTAMP, parsed.timestampMillis)
             }
 
         private fun extractTransactionId(intent: Intent): Long = intent.getLongExtra(EXTRA_ID, -1L)
@@ -177,6 +179,7 @@ class SmsConfirmActivity : ComponentActivity() {
                 confidence = CONFIDENCE_MANUAL_CONFIRM,
                 rawBody = intent.getStringExtra(EXTRA_BODY) ?: "",
                 sender = intent.getStringExtra(EXTRA_SENDER) ?: "",
+                timestampMillis = intent.getLongExtra(EXTRA_TIMESTAMP, System.currentTimeMillis()),
             )
         }
     }
@@ -264,7 +267,6 @@ private fun SmsConfirmScreen(
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.sms_confirm_dismiss)) }
                 TextButton(
                     onClick = {
-                        val now = ShamsiCalendar.now()
                         onSave(
                             Transaction(
                                 id = Transaction.NO_ID,
@@ -273,8 +275,8 @@ private fun SmsConfirmScreen(
                                 categoryName = selectedCategory,
                                 title = parsed.bankName,
                                 note = note,
-                                date = now,
-                                createdAtEpochMillis = System.currentTimeMillis(),
+                                date = ShamsiCalendar.fromEpochMillis(parsed.timestampMillis),
+                                createdAtEpochMillis = parsed.timestampMillis,
                                 source = TransactionSource.SMS,
                             ),
                         )

@@ -19,6 +19,8 @@ interface PreferencesRepository {
 
     suspend fun setSmsServiceEnabled(enabled: Boolean)
 
+    suspend fun setSmsOverlayEnabled(enabled: Boolean)
+
     suspend fun setDarkThemeConfig(config: DarkThemeConfig)
 
     suspend fun setLastSelectedMonth(
@@ -43,6 +45,8 @@ internal class DefaultPreferencesRepository
         override suspend fun setBiometricEnabled(enabled: Boolean) = dataSource.setBiometricEnabled(enabled)
 
         override suspend fun setSmsServiceEnabled(enabled: Boolean) = dataSource.setSmsServiceEnabled(enabled)
+
+        override suspend fun setSmsOverlayEnabled(enabled: Boolean) = dataSource.setSmsOverlayEnabled(enabled)
 
         override suspend fun setDarkThemeConfig(config: DarkThemeConfig) = dataSource.setDarkThemeConfig(config)
 

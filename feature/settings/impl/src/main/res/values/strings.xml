@@ -3,6 +3,8 @@
     <string name="feature_settings_impl_settings_title">تنظیمات</string>
     <string name="feature_settings_impl_settings_biometric">ورود با اثر انگشت</string>
     <string name="feature_settings_impl_settings_sms_service">تشخیص خودکار پیامک‌های بانکی</string>
+    <string name="feature_settings_impl_settings_sms_overlay">نمایش پنجره تایید روی صفحه</string>
+    <string name="feature_settings_impl_settings_sms_overlay_hint">در صورت خاموش بودن، تراکنش‌های شناسایی‌شده فقط در لیست «در انتظار تایید» نمایش داده می‌شوند</string>
     <string name="feature_settings_impl_settings_theme_title">پوسته برنامه</string>
     <string name="feature_settings_impl_settings_theme_system">هماهنگ با سیستم</string>
     <string name="feature_settings_impl_settings_theme_light">روشن</string>

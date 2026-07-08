@@ -25,6 +25,7 @@ class UserPreferencesDataSource
                     isAppActive = prefs[Keys.IS_APP_ACTIVE] ?: true,
                     biometricEnabled = prefs[Keys.BIOMETRIC_ENABLED] ?: false,
                     smsServiceEnabled = prefs[Keys.SMS_SERVICE_ENABLED] ?: true,
+                    smsOverlayEnabled = prefs[Keys.SMS_OVERLAY_ENABLED] ?: true,
                     darkThemeConfig =
                         prefs[Keys.DARK_THEME]?.let(DarkThemeConfig::valueOf)
                             ?: DarkThemeConfig.FOLLOW_SYSTEM,
@@ -45,6 +46,8 @@ class UserPreferencesDataSource
         suspend fun setBiometricEnabled(enabled: Boolean) = edit(Keys.BIOMETRIC_ENABLED, enabled)
 
         suspend fun setSmsServiceEnabled(enabled: Boolean) = edit(Keys.SMS_SERVICE_ENABLED, enabled)
+
+        suspend fun setSmsOverlayEnabled(enabled: Boolean) = edit(Keys.SMS_OVERLAY_ENABLED, enabled)
 
         suspend fun setDarkThemeConfig(config: DarkThemeConfig) {
             dataStore.edit { it[Keys.DARK_THEME] = config.name }
@@ -72,6 +75,7 @@ class UserPreferencesDataSource
             val IS_APP_ACTIVE = booleanPreferencesKey("is_app_active")
             val BIOMETRIC_ENABLED = booleanPreferencesKey("biometric_enabled")
             val SMS_SERVICE_ENABLED = booleanPreferencesKey("sms_service_enabled")
+            val SMS_OVERLAY_ENABLED = booleanPreferencesKey("sms_overlay_enabled")
             val DARK_THEME = stringPreferencesKey("dark_theme_config")
             val LAST_YEAR = intPreferencesKey("last_selected_year")
             val LAST_MONTH = intPreferencesKey("last_selected_month")

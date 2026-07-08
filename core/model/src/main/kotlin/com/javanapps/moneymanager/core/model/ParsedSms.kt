@@ -10,6 +10,7 @@ package com.javanapps.moneymanager.core.model
  * @param rawBody The original SMS body that was parsed.
  * @param sender The SMS sender id.
  * @param ruleId The [BankSmsRule.id] that matched, or null if heuristic.
+ * @param timestampMillis Epoch millis the SMS was actually received at (not when it was processed).
  */
 data class ParsedSms(
     val amountToman: Long,
@@ -19,6 +20,7 @@ data class ParsedSms(
     val rawBody: String,
     val sender: String,
     val ruleId: Long? = null,
+    val timestampMillis: Long = System.currentTimeMillis(),
 ) {
     val isHighConfidence: Boolean get() = confidence >= MIN_CONFIDENCE_THRESHOLD
 
