@@ -43,6 +43,19 @@ class SettingsViewModelTest {
         }
 
     @Test
+    fun setSmsOverlayEnabled_updatesPreferences() =
+        runTest {
+            viewModel.uiState.test {
+                val initialState = awaitItem()
+                assertThat(initialState.smsOverlayEnabled).isTrue()
+
+                viewModel.setSmsOverlayEnabled(false)
+                val updatedState = awaitItem()
+                assertThat(updatedState.smsOverlayEnabled).isFalse()
+            }
+        }
+
+    @Test
     fun setDarkThemeConfig_updatesPreferences() =
         runTest {
             viewModel.setDarkThemeConfig(DarkThemeConfig.DARK)

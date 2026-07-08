@@ -44,6 +44,7 @@ fun SettingsRoute(
         uiState = uiState,
         onBiometricChange = viewModel::setBiometricEnabled,
         onSmsServiceChange = viewModel::setSmsServiceEnabled,
+        onSmsOverlayChange = viewModel::setSmsOverlayEnabled,
         onThemeChange = viewModel::setDarkThemeConfig,
         onChangePassword = viewModel::changePassword,
         onMessageShown = viewModel::consumeMessage,
@@ -57,6 +58,7 @@ internal fun SettingsScreen(
     uiState: SettingsUiState,
     onBiometricChange: (Boolean) -> Unit,
     onSmsServiceChange: (Boolean) -> Unit,
+    onSmsOverlayChange: (Boolean) -> Unit,
     onThemeChange: (DarkThemeConfig) -> Unit,
     onChangePassword: (String, String) -> Unit,
     onMessageShown: () -> Unit,
@@ -88,6 +90,12 @@ internal fun SettingsScreen(
             title = stringResource(R.string.feature_settings_impl_settings_sms_service),
             checked = uiState.smsServiceEnabled,
             onChange = onSmsServiceChange,
+        )
+        SwitchRow(
+            title = stringResource(R.string.feature_settings_impl_settings_sms_overlay),
+            subtitle = stringResource(R.string.feature_settings_impl_settings_sms_overlay_hint),
+            checked = uiState.smsOverlayEnabled,
+            onChange = onSmsOverlayChange,
         )
 
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
@@ -146,13 +154,23 @@ private fun SwitchRow(
     title: String,
     checked: Boolean,
     onChange: (Boolean) -> Unit,
+    subtitle: String? = null,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(title, style = MaterialTheme.typography.bodyLarge)
+        Column {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            if (subtitle != null) {
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
         Switch(checked = checked, onCheckedChange = onChange)
     }
 }

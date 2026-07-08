@@ -6,6 +6,7 @@ data class UserData(
     val isAppActive: Boolean,
     val biometricEnabled: Boolean,
     val smsServiceEnabled: Boolean,
+    val smsOverlayEnabled: Boolean,
     val darkThemeConfig: DarkThemeConfig,
 )
 

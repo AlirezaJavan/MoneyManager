@@ -102,28 +102,33 @@ class SmsOverlayManager
     ) {
         private val windowManager = context.getSystemService(WindowManager::class.java)
         private val mainHandler = Handler(Looper.getMainLooper())
-        private var currentView: ComposeView? = null
-        private var currentOwner: OverlayLifecycleOwner? = null
+
+        /** Overlays currently attached to the window, keyed by transaction id. Later entries render on top. */
+        private val overlays = mutableMapOf<Long, OverlayEntry>()
 
         fun canShow(): Boolean = Settings.canDrawOverlays(context)
 
-        /** Must be called from the main thread. */
+        /**
+         * Must be called from the main thread. Adds a new overlay window on top of any overlay(s)
+         * already showing, so multiple SMS detected in a short interval each get their own dialog
+         * rather than the earlier ones being silently discarded.
+         */
         fun show(
             transactionId: Long,
             parsed: ParsedSms,
             scope: CoroutineScope,
         ) {
-            if (currentView != null) dismissInternal()
+            if (overlays.containsKey(transactionId)) return
 
             val owner =
                 OverlayLifecycleOwner(
                     onFallbackBack = {
                         scope.launch {
                             transactionRepository.delete(transactionId)
-                            dismiss()
+                            dismiss(transactionId)
                         }
                     },
-                ).also { currentOwner = it }
+                )
             owner.start()
 
             val view =
@@ -156,13 +161,13 @@ class SmsOverlayManager
                                     onSave = { tx ->
                                         scope.launch {
                                             transactionRepository.update(tx.copy(id = transactionId, isPending = false))
-                                            dismiss()
+                                            dismiss(transactionId)
                                         }
                                     },
                                     onDismiss = {
                                         scope.launch {
                                             transactionRepository.delete(transactionId)
-                                            dismiss()
+                                            dismiss(transactionId)
                                         }
                                     },
                                 )
@@ -183,23 +188,32 @@ class SmsOverlayManager
                     PixelFormat.TRANSLUCENT,
                 )
 
-            currentView = view
+            overlays[transactionId] = OverlayEntry(view, owner)
             windowManager.addView(view, params)
         }
 
-        /** Safe to call from any thread. */
-        fun dismiss() {
-            mainHandler.post { dismissInternal() }
+        /** Dismisses the overlay for a single transaction. Safe to call from any thread. */
+        fun dismiss(transactionId: Long) {
+            mainHandler.post { dismissInternal(transactionId) }
         }
 
-        private fun dismissInternal() {
-            currentOwner?.stop()
-            currentOwner = null
-            currentView?.let { view ->
-                runCatching { windowManager.removeView(view) }
+        /** Dismisses every currently showing overlay. Safe to call from any thread. */
+        fun dismissAll() {
+            mainHandler.post {
+                overlays.keys.toList().forEach { dismissInternal(it) }
             }
-            currentView = null
         }
+
+        private fun dismissInternal(transactionId: Long) {
+            val entry = overlays.remove(transactionId) ?: return
+            entry.owner.stop()
+            runCatching { windowManager.removeView(entry.view) }
+        }
+
+        private class OverlayEntry(
+            val view: ComposeView,
+            val owner: OverlayLifecycleOwner,
+        )
     }
 
 private class OverlayLifecycleOwner(
@@ -361,8 +375,8 @@ private fun SmsTransactionOverlay(
                                     categoryName = selectedCategory,
                                     title = parsed.bankName,
                                     note = note,
-                                    date = ShamsiCalendar.now(),
-                                    createdAtEpochMillis = System.currentTimeMillis(),
+                                    date = ShamsiCalendar.fromEpochMillis(parsed.timestampMillis),
+                                    createdAtEpochMillis = parsed.timestampMillis,
                                     source = TransactionSource.SMS,
                                     isPending = false,
                                 ),

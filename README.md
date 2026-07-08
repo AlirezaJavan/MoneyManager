@@ -25,10 +25,10 @@ A Persian-first personal finance app for Android, built with Kotlin and Jetpack 
 - **Transaction management** — Add, edit, and delete income/expense entries with Persian-digit amount formatting and a Shamsi date/time picker.
 - **Home dashboard** — Month-by-month transaction list with income/expense filter chips and per-month navigation.
 - **Reports** — Category-breakdown pie/bar charts, daily-total charts, monthly trend charts, and a full-text/category/type search over all transactions.
-- **Automatic SMS parsing** — An optional foreground service reads incoming bank SMS messages, matches them against configurable per-bank rules, and prompts the user to save the parsed transaction. A "teach" screen lets users create new bank rules from a sample SMS body.
+- **Automatic SMS parsing** — An optional foreground service reads incoming bank SMS messages, matches them against configurable per-bank rules, and prompts the user to save the parsed transaction using the SMS's own received time. A "teach" screen lets users create new bank rules from a sample SMS body. Multiple SMS detected in quick succession each get their own confirmation dialog, stacked on top of one another, instead of only the first one showing. The confirmation overlay can also be turned off entirely in Settings — detected transactions are then only surfaced in the pending-transactions list (which shows the matched bank name and accurate date/time) for the user to confirm from within the app.
 - **Categories** — Manage custom income and expense categories; delete with reassignment or bulk-delete of linked transactions.
 - **Authentication** — Password lock screen with optional biometric (fingerprint) unlock; the app automatically re-locks when it's backgrounded or closed.
-- **Settings** — Toggle the SMS service, biometric auth, and dark/light/system theme.
+- **Settings** — Toggle the SMS service, the SMS confirmation overlay, biometric auth, and dark/light/system theme.
 - **Legacy migration** — One-time import wizard that reads the SQLite database from the previous version of the app and migrates all transactions and categories.
 - **Home-screen widget** — Glance-based widget showing the current month's balance at a glance.
 - **Firebase Crashlytics** — Automatic crash reporting in release builds.

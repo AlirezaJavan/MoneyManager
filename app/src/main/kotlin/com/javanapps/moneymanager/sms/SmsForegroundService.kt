@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.javanapps.moneymanager.R
 import com.javanapps.moneymanager.core.data.DefaultCategories
 import com.javanapps.moneymanager.core.data.repository.BankSmsRuleRepository
+import com.javanapps.moneymanager.core.data.repository.PreferencesRepository
 import com.javanapps.moneymanager.core.data.repository.TransactionRepository
 import com.javanapps.moneymanager.core.data.sms.SmsHeuristicParser
 import com.javanapps.moneymanager.core.model.ParsedSms
@@ -29,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -40,6 +42,8 @@ class SmsForegroundService : Service() {
     @Inject lateinit var ruleRepository: BankSmsRuleRepository
 
     @Inject lateinit var transactionRepository: TransactionRepository
+
+    @Inject lateinit var preferencesRepository: PreferencesRepository
 
     @Inject lateinit var smsOverlayManager: SmsOverlayManager
 
@@ -56,7 +60,8 @@ class SmsForegroundService : Service() {
                 if (messages.isNullOrEmpty()) return
                 val sender = messages[0].originatingAddress ?: ""
                 val body = messages.joinToString("") { it.messageBody }
-                handleSms(sender, body)
+                val timestampMillis = messages[0].timestampMillis
+                handleSms(sender, body, timestampMillis)
             }
         }
 
@@ -79,12 +84,15 @@ class SmsForegroundService : Service() {
     private fun handleSms(
         sender: String,
         body: String,
+        timestampMillis: Long,
     ) {
         serviceScope.launch {
             val rules = ruleRepository.enabledRules()
-            val parsed = parser.parse(body, sender, rules) ?: return@launch
+            val parsed = parser.parse(body, sender, rules)?.copy(timestampMillis = timestampMillis) ?: return@launch
+            val smsDate = ShamsiCalendar.fromEpochMillis(timestampMillis)
 
-            // Save as a pending transaction
+            // Save as a pending transaction, using the SMS's own timestamp rather than the
+            // time it happened to be processed by this service.
             val id =
                 transactionRepository.add(
                     Transaction(
@@ -94,12 +102,18 @@ class SmsForegroundService : Service() {
                         categoryName = DefaultCategories.MISC,
                         title = parsed.bankName,
                         note = "",
-                        date = ShamsiCalendar.now(),
-                        createdAtEpochMillis = System.currentTimeMillis(),
+                        date = smsDate,
+                        createdAtEpochMillis = timestampMillis,
                         source = TransactionSource.SMS,
                         isPending = true,
                     ),
                 )
+
+            // When the overlay is disabled, the user relies solely on the pending transactions
+            // list, so skip both the overlay and the full-screen confirmation notification.
+            val overlayEnabled = preferencesRepository.userData.first().smsOverlayEnabled
+            if (!overlayEnabled) return@launch
+
             withContext(Dispatchers.Main) {
                 // A TYPE_APPLICATION_OVERLAY window (used by smsOverlayManager) can't dismiss a secure
                 // keyguard, unlike an Activity window - so route through the full-screen-intent
@@ -153,7 +167,7 @@ class SmsForegroundService : Service() {
     ): Int = START_STICKY
 
     override fun onDestroy() {
-        smsOverlayManager.dismiss()
+        smsOverlayManager.dismissAll()
         unregisterReceiver(smsReceiver)
         serviceScope.cancel()
         super.onDestroy()

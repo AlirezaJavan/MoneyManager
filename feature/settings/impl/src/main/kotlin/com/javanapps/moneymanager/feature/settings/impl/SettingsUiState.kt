@@ -7,6 +7,7 @@ enum class SettingsMessage { PasswordChanged, PasswordWrong }
 data class SettingsUiState(
     val biometricEnabled: Boolean = false,
     val smsServiceEnabled: Boolean = true,
+    val smsOverlayEnabled: Boolean = true,
     val darkThemeConfig: DarkThemeConfig = DarkThemeConfig.FOLLOW_SYSTEM,
     val message: SettingsMessage? = null,
 )
